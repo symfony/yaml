@@ -348,8 +348,8 @@ class Inline
                 return intval(self::parseScalar(substr($scalar, 2)));
             case 0 === strpos($scalar, '!!php/object:'):
                 return unserialize(substr($scalar, 13));
-            case 0 === strpos($scalar, '!!float'):
-                return floatval(substr($scalar, 7));
+            case 0 === strpos($scalar, '!!float '):
+                return floatval(substr($scalar, 8));
             case ctype_digit($scalar):
                 $raw = $scalar;
                 $cast = intval($scalar);
