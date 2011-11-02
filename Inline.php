@@ -78,6 +78,8 @@ class Inline
                 return '!!php/object:'.serialize($value);
             case is_array($value):
                 return self::dumpArray($value);
+            case is_float($value):
+                return '!!float '.str_replace(',', '.', $value);
             case null === $value:
                 return 'null';
             case true === $value:
@@ -346,6 +348,8 @@ class Inline
                 return intval(self::parseScalar(substr($scalar, 2)));
             case 0 === strpos($scalar, '!!php/object:'):
                 return unserialize(substr($scalar, 13));
+            case 0 === strpos($scalar, '!!float '):
+                return floatval(substr($scalar, 8));
             case ctype_digit($scalar):
                 $raw = $scalar;
                 $cast = intval($scalar);
