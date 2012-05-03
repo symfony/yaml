@@ -376,6 +376,13 @@ class Inline
                 return floatval(str_replace(',', '', $scalar));
             case preg_match(self::getTimestampRegex(), $scalar):
                 return strtotime($scalar);
+            case preg_match_all('/%([A-Z_]+)%/', $scalar, $matches):
+                foreach ($matches[1] as $key => $value) {
+                     if (defined($value)) {
+                         $scalar = str_replace($matches[0][$key], constant($value), $scalar);
+                     }
+                }
+                return $scalar;
             default:
                 return (string) $scalar;
         }
