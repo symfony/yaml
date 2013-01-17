@@ -9,15 +9,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\WebProfilerBundle;
-
-use Symfony\Component\HttpKernel\Bundle\Bundle;
+namespace Symfony\Component\Yaml\Exception;
 
 /**
- * Bundle.
+ * Exception class thrown when an error occurs during dumping.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @api
  */
-class WebProfilerBundle extends Bundle
+class DumpException extends \RuntimeException implements ExceptionInterface
 {
 }
