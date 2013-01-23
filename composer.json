@@ -1,7 +1,7 @@
 {
-    "name": "symfony/web-profiler-bundle",
-    "type": "symfony-bundle",
-    "description": "Symfony WebProfilerBundle",
+    "name": "symfony/yaml",
+    "type": "library",
+    "description": "Symfony Yaml Component",
     "keywords": [],
     "homepage": "http://symfony.com",
     "license": "MIT",
@@ -16,20 +16,12 @@
         }
     ],
     "require": {
-        "php": ">=5.3.3",
-        "symfony/http-kernel": "2.2.*",
-        "symfony/routing": "2.2.*",
-        "symfony/twig-bridge": "2.2.*"
-    },
-    "require-dev": {
-        "symfony/config": "2.2.*",
-        "symfony/dependency-injection": "2.2.*",
-        "symfony/stopwatch": "2.2.*"
+        "php": ">=5.3.3"
     },
     "autoload": {
-        "psr-0": { "Symfony\\Bundle\\WebProfilerBundle\\": "" }
+        "psr-0": { "Symfony\\Component\\Yaml\\": "" }
     },
-    "target-dir": "Symfony/Bundle/WebProfilerBundle",
+    "target-dir": "Symfony/Component/Yaml",
     "minimum-stability": "dev",
     "extra": {
         "branch-alias": {

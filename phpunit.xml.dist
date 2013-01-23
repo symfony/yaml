@@ -11,9 +11,8 @@
          syntaxCheck="false"
          bootstrap="vendor/autoload.php"
 >
-
     <testsuites>
-        <testsuite name="Symfony WebProfilerBundle Test Suite">
+        <testsuite name="Symfony Yaml Component Test Suite">
             <directory>./Tests/</directory>
         </testsuite>
     </testsuites>
@@ -22,9 +21,8 @@
         <whitelist>
             <directory>./</directory>
             <exclude>
-                <directory>./Tests</directory>
-                <directory>./Resources</directory>
                 <directory>./vendor</directory>
+                <directory>./Tests</directory>
             </exclude>
         </whitelist>
     </filter>
