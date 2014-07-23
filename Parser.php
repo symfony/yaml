@@ -432,7 +432,10 @@ class Parser
                             );
                         }
 
-                        $keys = array_merge($keys, array_diff(array_keys($this->refs[$refName]), $keys ));
+                        $keys = array_merge(
+                            $keys,
+                            array_diff(array_keys($this->refs[$refName]), $keys)
+                        );
                         $values[$key] = array_replace($this->refs[$refName], $values[$key]);
                     }
                 } elseif (!isset($result[$key]) || is_array($result[$key])) {
