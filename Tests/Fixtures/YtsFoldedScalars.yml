@@ -174,3 +174,31 @@ php: |
       'kept' => "This has four newlines.\n\n\n\n",
       'same as "kept" above' => "This has four newlines.\n\n\n\n"
     )
+---
+test: Include lines within blocks that start with a hash
+brief: >
+    Comments may not appear inside scalars
+yaml: |
+    shallow: |
+        a line here
+        # this should still appear
+        and another here
+php: |
+    array(
+      'shallow' => "a line here\n# this should still appear\nand another here\n"
+    )
+---
+test: Include lines within deep-nested blocks that start with a hash
+brief: >
+    Comments may not appear inside scalars
+yaml: |
+    deep:
+        nested:
+            literal: |
+                a line here
+                # this should still appear
+                and another here
+php: |
+    array(
+      'deep' => array('nested' => array('literal' => "a line here\n# this should still appear\nand another here\n"))
+    )
