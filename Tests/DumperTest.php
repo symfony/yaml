@@ -35,6 +35,17 @@ class DumperTest extends \PHPUnit_Framework_TestCase
         ),
     );
 
+    protected $comments = array(
+        '' => 'An empty key',
+        'foo' => 'A value with a hashmark',
+        'foo\'bar' => 'A key with an embedded quote',
+        'bar' => array(0 => 'First index', 1 => 'Second index'),
+        'foobar' => array(
+            '#' => 'A nested array can also have comments',
+            'foo' => 'A nested comment',
+        ),
+    );
+
     protected function setUp()
     {
         $this->parser = new Parser();
@@ -74,6 +85,37 @@ foobar:
 
 EOF;
         $this->assertEquals($expected, $this->dumper->dump($this->array, 4, 0));
+    }
+
+    public function testCommentedDump()
+    {
+        $expected = <<<'EOF'
+# An empty key
+'': bar
+# A value with a hashmark
+foo: '#bar'
+# A key with an embedded quote
+'foo''bar': {  }
+bar:
+    # First index
+    - 1
+    # Second index
+    - foo
+# A nested array can also have comments
+foobar:
+    # A nested comment
+    foo: bar
+    bar:
+        - 1
+        - foo
+    foobar:
+        foo: bar
+        bar:
+            - 1
+            - foo
+
+EOF;
+        $this->assertEquals($expected, $this->dumper->commentedDump($this->array, $this->comments, 4, 0));
     }
 
     public function testSpecifications()
