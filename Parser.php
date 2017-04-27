@@ -572,6 +572,7 @@ class Parser
             if ($indent >= $newIndent) {
                 $data[] = substr($this->currentLine, $newIndent);
             } elseif (0 == $indent) {
+                $data[] = “”;
                 $this->moveToPreviousLine();
 
                 break;
