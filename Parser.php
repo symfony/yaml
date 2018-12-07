@@ -117,7 +117,7 @@ class Parser
         return $this->getRealCurrentLineNb();
     }
 
-    private function doParse(string $value, int $flags)
+    protected function doParse(string $value, int $flags)
     {
         $this->currentLineNb = -1;
         $this->currentLine = '';
@@ -433,7 +433,7 @@ class Parser
         return empty($data) ? null : $data;
     }
 
-    private function parseBlock(int $offset, string $yaml, int $flags)
+    protected function parseBlock(int $offset, string $yaml, int $flags)
     {
         $skippedLineNumbers = $this->skippedLineNumbers;
 
@@ -481,7 +481,7 @@ class Parser
      *
      * @return int The current line indentation
      */
-    private function getCurrentLineIndentation(): int
+    protected function getCurrentLineIndentation(): int
     {
         return \strlen($this->currentLine) - \strlen(ltrim($this->currentLine, ' '));
     }
@@ -496,7 +496,7 @@ class Parser
      *
      * @throws ParseException When indentation problem are detected
      */
-    private function getNextEmbedBlock(int $indentation = null, bool $inSequence = false): ?string
+    protected function getNextEmbedBlock(int $indentation = null, bool $inSequence = false): ?string
     {
         $oldLineIndentation = $this->getCurrentLineIndentation();
 
@@ -591,7 +591,7 @@ class Parser
      *
      * @return bool
      */
-    private function moveToNextLine(): bool
+    protected function moveToNextLine(): bool
     {
         if ($this->currentLineNb >= \count($this->lines) - 1) {
             return false;
@@ -607,7 +607,7 @@ class Parser
      *
      * @return bool
      */
-    private function moveToPreviousLine(): bool
+    protected function moveToPreviousLine(): bool
     {
         if ($this->currentLineNb < 1) {
             return false;
@@ -629,7 +629,7 @@ class Parser
      *
      * @throws ParseException When reference does not exist
      */
-    private function parseValue(string $value, int $flags, string $context)
+    protected function parseValue(string $value, int $flags, string $context)
     {
         if (0 === strpos($value, '*')) {
             if (false !== $pos = strpos($value, '#')) {
@@ -726,7 +726,7 @@ class Parser
      *
      * @return string The text value
      */
-    private function parseBlockScalar(string $style, string $chomping = '', int $indentation = 0): string
+    protected function parseBlockScalar(string $style, string $chomping = '', int $indentation = 0): string
     {
         $notEOF = $this->moveToNextLine();
         if (!$notEOF) {
@@ -835,7 +835,7 @@ class Parser
      *
      * @return bool Returns true if the next line is indented, false otherwise
      */
-    private function isNextLineIndented(): bool
+    protected function isNextLineIndented(): bool
     {
         $currentIndentation = $this->getCurrentLineIndentation();
         $movements = 0;
@@ -866,7 +866,7 @@ class Parser
      *
      * @return bool Returns true if the current line is empty or if it is a comment line, false otherwise
      */
-    private function isCurrentLineEmpty(): bool
+    protected function isCurrentLineEmpty(): bool
     {
         return $this->isCurrentLineBlank() || $this->isCurrentLineComment();
     }
@@ -876,7 +876,7 @@ class Parser
      *
      * @return bool Returns true if the current line is blank, false otherwise
      */
-    private function isCurrentLineBlank(): bool
+    protected function isCurrentLineBlank(): bool
     {
         return '' == trim($this->currentLine, ' ');
     }
@@ -886,7 +886,7 @@ class Parser
      *
      * @return bool Returns true if the current line is a comment line, false otherwise
      */
-    private function isCurrentLineComment(): bool
+    protected function isCurrentLineComment(): bool
     {
         //checking explicitly the first char of the trim is faster than loops or strpos
         $ltrimmedLine = ltrim($this->currentLine, ' ');
@@ -894,7 +894,7 @@ class Parser
         return '' !== $ltrimmedLine && '#' === $ltrimmedLine[0];
     }
 
-    private function isCurrentLineLastLineInDocument(): bool
+    protected function isCurrentLineLastLineInDocument(): bool
     {
         return ($this->offset + $this->currentLineNb) >= ($this->totalNumberOfLines - 1);
     }
@@ -906,7 +906,7 @@ class Parser
      *
      * @return string A cleaned up YAML string
      */
-    private function cleanup(string $value): string
+    protected function cleanup(string $value): string
     {
         $value = str_replace(array("\r\n", "\r"), "\n", $value);
 
@@ -942,7 +942,7 @@ class Parser
      *
      * @return bool Returns true if the next line starts unindented collection, false otherwise
      */
-    private function isNextLineUnIndentedCollection(): bool
+    protected function isNextLineUnIndentedCollection(): bool
     {
         $currentIndentation = $this->getCurrentLineIndentation();
         $movements = 0;
@@ -973,7 +973,7 @@ class Parser
      *
      * @return bool Returns true if the string is un-indented collection item, false otherwise
      */
-    private function isStringUnIndentedCollectionItem(): bool
+    protected function isStringUnIndentedCollectionItem(): bool
     {
         return '-' === rtrim($this->currentLine) || 0 === strpos($this->currentLine, '- ');
     }
@@ -1026,7 +1026,7 @@ class Parser
      * Prevent values such as "!foo {quz: bar}" to be considered as
      * a mapping block.
      */
-    private function trimTag(string $value): string
+    protected function trimTag(string $value): string
     {
         if ('!' === $value[0]) {
             return ltrim(substr($value, 1, strcspn($value, " \r\n", 1)), ' ');
@@ -1035,7 +1035,7 @@ class Parser
         return $value;
     }
 
-    private function getLineTag(string $value, int $flags, bool $nextLineCheck = true): ?string
+    protected function getLineTag(string $value, int $flags, bool $nextLineCheck = true): ?string
     {
         if ('' === $value || '!' !== $value[0] || 1 !== self::preg_match('/^'.self::TAG_PATTERN.' *( +#.*)?$/', $value, $matches)) {
             return null;
