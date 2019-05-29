@@ -13,6 +13,7 @@ namespace Symfony\Component\Yaml\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Yaml\Dumper;
+use Symfony\Component\Yaml\Exception\DumpException;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Yaml;
 
@@ -23,28 +24,28 @@ class DumperTest extends TestCase
     protected $path;
 
     protected $array = [
-        '' => 'bar',
-        'foo' => '#bar',
+        ''         => 'bar',
+        'foo'      => '#bar',
         'foo\'bar' => [],
-        'bar' => [1, 'foo'],
-        'foobar' => [
-            'foo' => 'bar',
-            'bar' => [1, 'foo'],
+        'bar'      => [1, 'foo'],
+        'foobar'   => [
+            'foo'    => 'bar',
+            'bar'    => [1, 'foo'],
             'foobar' => [
                 'foo' => 'bar',
-                'bar' => [1, 'foo'],
+                'bar' => [1, 'foo', ['foo' => 'bar']],
             ],
         ],
     ];
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->parser = new Parser();
         $this->dumper = new Dumper();
         $this->path = __DIR__.'/Fixtures';
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->parser = null;
         $this->dumper = null;
@@ -72,6 +73,7 @@ foobar:
               bar:
                      - 1
                      - foo
+                     - { foo: bar }
 
 EOF;
         $this->assertEquals($expected, $dumper->dump($this->array, 4, 0));
@@ -105,7 +107,7 @@ EOF;
     public function testInlineLevel()
     {
         $expected = <<<'EOF'
-{ '': bar, foo: '#bar', 'foo''bar': {  }, bar: [1, foo], foobar: { foo: bar, bar: [1, foo], foobar: { foo: bar, bar: [1, foo] } } }
+{ '': bar, foo: '#bar', 'foo''bar': {  }, bar: [1, foo], foobar: { foo: bar, bar: [1, foo], foobar: { foo: bar, bar: [1, foo, { foo: bar }] } } }
 EOF;
         $this->assertEquals($expected, $this->dumper->dump($this->array, -10), '->dump() takes an inline level argument');
         $this->assertEquals($expected, $this->dumper->dump($this->array, 0), '->dump() takes an inline level argument');
@@ -115,7 +117,7 @@ EOF;
 foo: '#bar'
 'foo''bar': {  }
 bar: [1, foo]
-foobar: { foo: bar, bar: [1, foo], foobar: { foo: bar, bar: [1, foo] } }
+foobar: { foo: bar, bar: [1, foo], foobar: { foo: bar, bar: [1, foo, { foo: bar }] } }
 
 EOF;
         $this->assertEquals($expected, $this->dumper->dump($this->array, 1), '->dump() takes an inline level argument');
@@ -130,7 +132,7 @@ bar:
 foobar:
     foo: bar
     bar: [1, foo]
-    foobar: { foo: bar, bar: [1, foo] }
+    foobar: { foo: bar, bar: [1, foo, { foo: bar }] }
 
 EOF;
         $this->assertEquals($expected, $this->dumper->dump($this->array, 2), '->dump() takes an inline level argument');
@@ -149,7 +151,7 @@ foobar:
         - foo
     foobar:
         foo: bar
-        bar: [1, foo]
+        bar: [1, foo, { foo: bar }]
 
 EOF;
         $this->assertEquals($expected, $this->dumper->dump($this->array, 3), '->dump() takes an inline level argument');
@@ -171,6 +173,7 @@ foobar:
         bar:
             - 1
             - foo
+            - { foo: bar }
 
 EOF;
         $this->assertEquals($expected, $this->dumper->dump($this->array, 4), '->dump() takes an inline level argument');
@@ -191,11 +194,9 @@ EOF;
         $this->assertEquals('{ foo: null, bar: 1 }', $dump, '->dump() does not dump objects when disabled');
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\DumpException
-     */
     public function testObjectSupportDisabledWithExceptions()
     {
+        $this->expectException(DumpException::class);
         $this->dumper->dump(['foo' => new A(), 'bar' => 1], 0, 0, Yaml::DUMP_EXCEPTION_ON_INVALID_TYPE);
     }
 
@@ -210,25 +211,25 @@ EOF;
     public function getEscapeSequences()
     {
         return [
-            'empty string' => ['', "''"],
-            'null' => ["\x0", '"\\0"'],
-            'bell' => ["\x7", '"\\a"'],
-            'backspace' => ["\x8", '"\\b"'],
-            'horizontal-tab' => ["\t", '"\\t"'],
-            'line-feed' => ["\n", '"\\n"'],
-            'vertical-tab' => ["\v", '"\\v"'],
-            'form-feed' => ["\xC", '"\\f"'],
-            'carriage-return' => ["\r", '"\\r"'],
-            'escape' => ["\x1B", '"\\e"'],
-            'space' => [' ', "' '"],
-            'double-quote' => ['"', "'\"'"],
-            'slash' => ['/', '/'],
-            'backslash' => ['\\', '\\'],
-            'next-line' => ["\xC2\x85", '"\\N"'],
-            'non-breaking-space' => ["\xc2\xa0", '"\\_"'],
-            'line-separator' => ["\xE2\x80\xA8", '"\\L"'],
+            'empty string'        => ['', "''"],
+            'null'                => ["\x0", '"\\0"'],
+            'bell'                => ["\x7", '"\\a"'],
+            'backspace'           => ["\x8", '"\\b"'],
+            'horizontal-tab'      => ["\t", '"\\t"'],
+            'line-feed'           => ["\n", '"\\n"'],
+            'vertical-tab'        => ["\v", '"\\v"'],
+            'form-feed'           => ["\xC", '"\\f"'],
+            'carriage-return'     => ["\r", '"\\r"'],
+            'escape'              => ["\x1B", '"\\e"'],
+            'space'               => [' ', "' '"],
+            'double-quote'        => ['"', "'\"'"],
+            'slash'               => ['/', '/'],
+            'backslash'           => ['\\', '\\'],
+            'next-line'           => ["\xC2\x85", '"\\N"'],
+            'non-breaking-space'  => ["\xc2\xa0", '"\\_"'],
+            'line-separator'      => ["\xE2\x80\xA8", '"\\L"'],
             'paragraph-separator' => ["\xE2\x80\xA9", '"\\P"'],
-            'colon' => [':', "':'"],
+            'colon'               => [':', "':'"],
         ];
     }
 
@@ -376,9 +377,9 @@ YAML;
     {
         $data = [
             'data' => [
-                'single_line' => 'foo bar baz',
-                'multi_line' => "foo\nline with trailing spaces:\n  \nbar\ninteger like line:\n123456789\nempty line:\n\nbaz",
-                'multi_line_with_carriage_return' => "foo\nbar\r\nbaz",
+                'single_line'                      => 'foo bar baz',
+                'multi_line'                       => "foo\nline with trailing spaces:\n  \nbar\ninteger like line:\n123456789\nempty line:\n\nbaz",
+                'multi_line_with_carriage_return'  => "foo\nbar\r\nbaz",
                 'nested_inlined_multi_line_string' => [
                     'inlined_multi_line' => "foo\nbar\r\nempty line:\n\nbaz",
                 ],
@@ -404,21 +405,17 @@ YAML;
         $this->assertSame("- \"a\\r\\nb\\nc\"\n", $this->dumper->dump(["a\r\nb\nc"], 2, 0, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The indentation must be greater than zero
-     */
     public function testZeroIndentationThrowsException()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The indentation must be greater than zero');
         new Dumper(0);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The indentation must be greater than zero
-     */
     public function testNegativeIndentationThrowsException()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The indentation must be greater than zero');
         new Dumper(-4);
     }
 }

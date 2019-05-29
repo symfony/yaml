@@ -22,12 +22,12 @@ class ParserTest extends TestCase
     /** @var Parser */
     protected $parser;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->parser = new Parser();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->parser = null;
 
@@ -512,11 +512,9 @@ YAML;
         return $tests;
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     */
     public function testObjectsSupportDisabledWithExceptions()
     {
+        $this->expectException(ParseException::class);
         $yaml = <<<'EOF'
 foo: !php/object:O:30:"Symfony\Tests\Component\Yaml\B":1:{s:1:"b";s:3:"foo";}
 bar: 1
@@ -526,7 +524,7 @@ EOF;
     }
 
     /**
-     * @group legacy
+     * @group               legacy
      * @expectedDeprecation Support for mapping keys in multi-line blocks is deprecated since Symfony 4.3 and will throw a ParseException in 5.0.
      */
     public function testMappingKeyInMultiLineStringTriggersDeprecationNotice()
@@ -572,11 +570,9 @@ EOF;
         }
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     */
     public function testUnindentedCollectionException()
     {
+        $this->expectException(ParseException::class);
         $yaml = <<<'EOF'
 
 collection:
@@ -589,11 +585,9 @@ EOF;
         $this->parser->parse($yaml);
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     */
     public function testShortcutKeyUnindentedCollectionException()
     {
+        $this->expectException(ParseException::class);
         $yaml = <<<'EOF'
 
 collection:
@@ -605,12 +599,10 @@ EOF;
         $this->parser->parse($yaml);
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessageRegExp /^Multiple documents are not supported.+/
-     */
     public function testMultipleDocumentsNotSupportedException()
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessageRegExp('/^Multiple documents are not supported.+/');
         Yaml::parse(<<<'EOL'
 # Ranking of 1998 home runs
 ---
@@ -626,11 +618,9 @@ EOL
         );
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     */
     public function testSequenceInAMapping()
     {
+        $this->expectException(ParseException::class);
         Yaml::parse(<<<'EOF'
 yaml:
   hash: me
@@ -735,10 +725,10 @@ EOT;
 
     /**
      * @dataProvider getParseExceptionNotAffectedMultiLineStringLastResortParsing
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
      */
     public function testParseExceptionNotAffectedByMultiLineStringLastResortParsing($yaml)
     {
+        $this->expectException(ParseException::class);
         $this->parser->parse($yaml);
     }
 
@@ -768,11 +758,9 @@ EOT;
         $this->assertSame($expected, $this->parser->parse($yaml));
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     */
     public function testMappingInASequence()
     {
+        $this->expectException(ParseException::class);
         Yaml::parse(<<<'EOF'
 yaml:
   - array stuff
@@ -781,12 +769,10 @@ EOF
         );
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessage missing colon
-     */
     public function testScalarInSequence()
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('missing colon');
         Yaml::parse(<<<'EOF'
 foo:
     - bar
@@ -797,9 +783,6 @@ EOF
     }
 
     /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessage Duplicate key "child" detected
-     *
      * > It is an error for two equal keys to appear in the same mapping node.
      * > In such a case the YAML processor may continue, ignoring the second
      * > "key: value" pair and issuing an appropriate warning. This strategy
@@ -811,6 +794,8 @@ EOF
      */
     public function testMappingDuplicateKeyBlock()
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('Duplicate key "child" detected');
         $input = <<<'EOD'
 parent:
     child: first
@@ -827,12 +812,10 @@ EOD;
         $this->assertSame($expected, Yaml::parse($input));
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessage Duplicate key "child" detected
-     */
     public function testMappingDuplicateKeyFlow()
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('Duplicate key "child" detected');
         $input = <<<'EOD'
 parent: { child: first, child: duplicate }
 parent: { child: duplicate, child: duplicate }
@@ -846,11 +829,11 @@ EOD;
     }
 
     /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
      * @dataProvider getParseExceptionOnDuplicateData
      */
     public function testParseExceptionOnDuplicate($input, $duplicateKey, $lineNumber)
     {
+        $this->expectException(ParseException::class);
         $this->expectExceptionMessage(sprintf('Duplicate key "%s" detected at line %d', $duplicateKey, $lineNumber));
 
         Yaml::parse($input);
@@ -989,7 +972,7 @@ header
 
 footer # comment3
 EOT
-        ]], Yaml::parse(<<<'EOF'
+                             ]], Yaml::parse(<<<'EOF'
 -
     content: |
         # comment 1
@@ -1008,8 +991,8 @@ EOF
     public function testNestedFoldedStringBlockWithComments()
     {
         $this->assertEquals([[
-            'title' => 'some title',
-            'content' => <<<'EOT'
+                                 'title'   => 'some title',
+                                 'content' => <<<'EOT'
 # comment 1
 header
 
@@ -1020,7 +1003,7 @@ header
 
 footer # comment3
 EOT
-        ]], Yaml::parse(<<<'EOF'
+                             ]], Yaml::parse(<<<'EOF'
 -
     title: some title
     content: |
@@ -1040,15 +1023,15 @@ EOF
     public function testReferenceResolvingInInlineStrings()
     {
         $this->assertEquals([
-            'var' => 'var-value',
-            'scalar' => 'var-value',
-            'list' => ['var-value'],
-            'list_in_list' => [['var-value']],
-            'map_in_list' => [['key' => 'var-value']],
+            'var'              => 'var-value',
+            'scalar'           => 'var-value',
+            'list'             => ['var-value'],
+            'list_in_list'     => [['var-value']],
+            'map_in_list'      => [['key' => 'var-value']],
             'embedded_mapping' => [['key' => 'var-value']],
-            'map' => ['key' => 'var-value'],
-            'list_in_map' => ['key' => ['var-value']],
-            'map_in_map' => ['foo' => ['bar' => 'var-value']],
+            'map'              => ['key' => 'var-value'],
+            'list_in_map'      => ['key' => ['var-value']],
+            'map_in_map'       => ['foo' => ['bar' => 'var-value']],
         ], Yaml::parse(<<<'EOF'
 var:  &var var-value
 scalar: *var
@@ -1074,12 +1057,10 @@ EOF;
         $this->assertEquals(['foo' => 1, 'bar' => 2], $this->parser->parse($yaml));
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessage Numeric keys are not supported. Quote your evaluable mapping keys instead
-     */
     public function testFloatKeys()
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('Numeric keys are not supported. Quote your evaluable mapping keys instead');
         $yaml = <<<'EOF'
 foo:
     1.2: "bar"
@@ -1089,12 +1070,10 @@ EOF;
         $this->parser->parse($yaml);
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessage Non-string keys are not supported. Quote your evaluable mapping keys instead
-     */
     public function testBooleanKeys()
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('Non-string keys are not supported. Quote your evaluable mapping keys instead');
         $yaml = <<<'EOF'
 true: foo
 false: bar
@@ -1117,23 +1096,21 @@ EOF;
 EOF;
 
         $expected = [
-            '1.2' => 'bar',
-            '1.3' => 'baz',
-            'true' => 'foo',
+            '1.2'   => 'bar',
+            '1.3'   => 'baz',
+            'true'  => 'foo',
             'false' => 'bar',
-            'null' => 'null',
-            '~' => 'null',
+            'null'  => 'null',
+            '~'     => 'null',
         ];
 
         $this->assertEquals($expected, $this->parser->parse($yaml));
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessage A colon cannot be used in an unquoted mapping value
-     */
     public function testColonInMappingValueException()
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('A colon cannot be used in an unquoted mapping value');
         $yaml = <<<'EOF'
 foo: bar: baz
 EOF;
@@ -1181,7 +1158,7 @@ EOT;
         $expected = [
             'pages' => [
                 [
-                    'title' => 'some title',
+                    'title'   => 'some title',
                     'content' => <<<'EOT'
 # comment 1
 header
@@ -1215,7 +1192,7 @@ collection:
         baz
 EOT;
         $expected = [
-            'test' => <<<'EOT'
+            'test'       => <<<'EOT'
 foo
 # bar
 baz
@@ -1347,30 +1324,30 @@ EOT
     public function getBinaryData()
     {
         return [
-            'enclosed with double quotes' => ['data: !!binary "SGVsbG8gd29ybGQ="'],
-            'enclosed with single quotes' => ["data: !!binary 'SGVsbG8gd29ybGQ='"],
-            'containing spaces' => ['data: !!binary  "SGVs bG8gd 29ybGQ="'],
-            'in block scalar' => [
+            'enclosed with double quotes'       => ['data: !!binary "SGVsbG8gd29ybGQ = "'],
+            'enclosed with single quotes'       => ["data: !!binary 'SGVsbG8gd29ybGQ='"],
+            'containing spaces'                 => ['data: !!binary  "SGVs bG8gd 29ybGQ = "'],
+            'in block scalar'                   => [
                 <<<'EOT'
 data: !!binary |
     SGVsbG8gd29ybGQ=
 EOT
-    ],
+            ],
             'containing spaces in block scalar' => [
                 <<<'EOT'
 data: !!binary |
     SGVs bG8gd 29ybGQ=
 EOT
-    ],
+            ],
         ];
     }
 
     /**
      * @dataProvider getInvalidBinaryData
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
      */
     public function testParseInvalidBinaryData($data, $expectedMessage)
     {
+        $this->expectException(ParseException::class);
         if (method_exists($this, 'expectException')) {
             $this->expectExceptionMessageRegExp($expectedMessage);
         } else {
@@ -1383,10 +1360,10 @@ EOT
     public function getInvalidBinaryData()
     {
         return [
-            'length not a multiple of four' => ['data: !!binary "SGVsbG8d29ybGQ="', '/The normalized base64 encoded data \(data without whitespace characters\) length must be a multiple of four \(\d+ bytes given\)/'],
-            'invalid characters' => ['!!binary "SGVsbG8#d29ybGQ="', '/The base64 encoded data \(.*\) contains invalid characters/'],
-            'too many equals characters' => ['data: !!binary "SGVsbG8gd29yb==="', '/The base64 encoded data \(.*\) contains invalid characters/'],
-            'misplaced equals character' => ['data: !!binary "SGVsbG8gd29ybG=Q"', '/The base64 encoded data \(.*\) contains invalid characters/'],
+            'length not a multiple of four'                 => ['data: !!binary "SGVsbG8d29ybGQ = "', '/The normalized base64 encoded data \(data without whitespace characters\) length must be a multiple of four \(\d+ bytes given\)/'],
+            'invalid characters'                            => ['!!binary "SGVsbG8#d29ybGQ="', '/The base64 encoded data \(.*\) contains invalid characters/'],
+            'too many equals characters'                    => ['data: !!binary "SGVsbG8gd29yb==="', '/The base64 encoded data \(.*\) contains invalid characters/'],
+            'misplaced equals character'                    => ['data: !!binary "SGVsbG8gd29ybG=Q"', '/The base64 encoded data \(.*\) contains invalid characters/'],
             'length not a multiple of four in block scalar' => [
                 <<<'EOT'
 data: !!binary |
@@ -1395,7 +1372,7 @@ EOT
                 ,
                 '/The normalized base64 encoded data \(data without whitespace characters\) length must be a multiple of four \(\d+ bytes given\)/',
             ],
-            'invalid characters in block scalar' => [
+            'invalid characters in block scalar'            => [
                 <<<'EOT'
 data: !!binary |
     SGVsbG8#d29ybGQ=
@@ -1403,7 +1380,7 @@ EOT
                 ,
                 '/The base64 encoded data \(.*\) contains invalid characters/',
             ],
-            'too many equals characters in block scalar' => [
+            'too many equals characters in block scalar'    => [
                 <<<'EOT'
 data: !!binary |
     SGVsbG8gd29yb===
@@ -1411,7 +1388,7 @@ EOT
                 ,
                 '/The base64 encoded data \(.*\) contains invalid characters/',
             ],
-            'misplaced equals character in block scalar' => [
+            'misplaced equals character in block scalar'    => [
                 <<<'EOT'
 data: !!binary |
     SGVsbG8gd29ybG=Q
@@ -1540,7 +1517,7 @@ YAML;
         $expected = [
             'foo' => [
                 'foobar' => 'foo #bar',
-                'bar' => 'baz',
+                'bar'    => 'baz',
             ],
         ];
 
@@ -1662,7 +1639,7 @@ EOF;
     public function taggedValuesProvider()
     {
         return [
-            'scalars' => [
+            'scalars'                             => [
                 [
                     'foo' => new TaggedValue('inline', 'bar'),
                     'quz' => new TaggedValue('long', 'this is a long text'),
@@ -1674,7 +1651,7 @@ quz: !long >
   text
 YAML
             ],
-            'sequences' => [
+            'sequences'                           => [
                 [new TaggedValue('foo', ['yaml']), new TaggedValue('quz', ['bar'])],
                 <<<YAML
 - !foo
@@ -1682,7 +1659,7 @@ YAML
 - !quz [bar]
 YAML
             ],
-            'mappings' => [
+            'mappings'                            => [
                 new TaggedValue('foo', ['foo' => new TaggedValue('quz', ['bar']), 'quz' => new TaggedValue('foo', ['quz' => 'bar'])]),
                 <<<YAML
 !foo
@@ -1691,7 +1668,7 @@ quz: !foo
    quz: bar
 YAML
             ],
-            'inline' => [
+            'inline'                              => [
                 [new TaggedValue('foo', ['foo', 'bar']), new TaggedValue('quz', ['foo' => 'bar', 'quz' => new TaggedValue('bar', ['one' => 'bar'])])],
                 <<<YAML
 - !foo [foo, bar]
@@ -1710,48 +1687,38 @@ YAML
         $this->assertSame('12', $this->parser->parse('! 12'));
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessage Tags support is not enabled. Enable the "Yaml::PARSE_CUSTOM_TAGS" flag to use "!iterator" at line 1 (near "!iterator [foo]").
-     */
     public function testCustomTagsDisabled()
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('Tags support is not enabled. Enable the "Yaml::PARSE_CUSTOM_TAGS" flag to use "!iterator" at line 1 (near "!iterator [foo]").');
         $this->parser->parse('!iterator [foo]');
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessage Tags support is not enabled. Enable the "Yaml::PARSE_CUSTOM_TAGS" flag to use "!iterator" at line 1 (near "!iterator foo").
-     */
     public function testUnsupportedTagWithScalar()
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('Tags support is not enabled. Enable the "Yaml::PARSE_CUSTOM_TAGS" flag to use "!iterator" at line 1 (near "!iterator foo").');
         $this->parser->parse('!iterator foo');
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessage The string "!!iterator foo" could not be parsed as it uses an unsupported built-in tag at line 1 (near "!!iterator foo").
-     */
     public function testUnsupportedBuiltInTagWithScalar()
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('The string "!!iterator foo" could not be parsed as it uses an unsupported built-in tag at line 1 (near "!!iterator foo").');
         $this->parser->parse('!!iterator foo');
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessage The built-in tag "!!foo" is not implemented at line 1 (near "!!foo").
-     */
     public function testExceptionWhenUsingUnsuportedBuiltInTags()
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('The built-in tag "!!foo" is not implemented at line 1 (near "!!foo").');
         $this->parser->parse('!!foo');
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessage Complex mappings are not supported at line 1 (near "? "1"").
-     */
     public function testComplexMappingThrowsParseException()
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('Complex mappings are not supported at line 1 (near "? "1"").');
         $yaml = <<<YAML
 ? "1"
 :
@@ -1761,12 +1728,10 @@ YAML;
         $this->parser->parse($yaml);
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessage Complex mappings are not supported at line 2 (near "? "1"").
-     */
     public function testComplexMappingNestedInMappingThrowsParseException()
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('Complex mappings are not supported at line 2 (near "? "1"").');
         $yaml = <<<YAML
 diet:
   ? "1"
@@ -1777,12 +1742,10 @@ YAML;
         $this->parser->parse($yaml);
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessage Complex mappings are not supported at line 1 (near "- ? "1"").
-     */
     public function testComplexMappingNestedInSequenceThrowsParseException()
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('Complex mappings are not supported at line 1 (near "- ? "1"").');
         $yaml = <<<YAML
 - ? "1"
   :
@@ -1792,12 +1755,10 @@ YAML;
         $this->parser->parse($yaml);
     }
 
-    /**
-     * @expectedException        \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessage Unable to parse at line 1 (near "[parameters]").
-     */
     public function testParsingIniThrowsException()
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('Unable to parse at line 1 (near "[parameters]").');
         $ini = <<<INI
 [parameters]
   foo = bar
@@ -1847,12 +1808,10 @@ INI;
         $this->assertEquals($trickyVal, $arrayFromYaml);
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessage Reference "foo" does not exist at line 2
-     */
     public function testParserCleansUpReferencesBetweenRuns()
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('Reference "foo" does not exist at line 2');
         $yaml = <<<YAML
 foo: &foo
     baz: foobar
@@ -1883,7 +1842,7 @@ YAML;
                     'from' => [
                         'bar',
                     ],
-                    'to' => 'baz',
+                    'to'   => 'baz',
                 ],
             ],
         ];
@@ -1908,14 +1867,14 @@ foobar:
     <<: [*FOO, *BAR]
 YAML;
         $expected = (object) [
-            'foo' => (object) [
+            'foo'    => (object) [
                 'bar' => 1,
             ],
-            'bar' => (object) [
+            'bar'    => (object) [
                 'baz' => 2,
                 'bar' => 1,
             ],
-            'baz' => (object) [
+            'baz'    => (object) [
                 'baz_foo' => 3,
                 'baz_bar' => 4,
             ],
@@ -1940,21 +1899,17 @@ YAML;
         $this->assertInternalType('array', $this->parser->parseFile(__DIR__.'/Fixtures/index.yml'));
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessageRegExp #^File ".+/Fixtures/nonexistent.yml" does not exist\.$#
-     */
     public function testParsingNonExistentFilesThrowsException()
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessageRegExp('#^File ".+/Fixtures/nonexistent.yml" does not exist\.$#');
         $this->parser->parseFile(__DIR__.'/Fixtures/nonexistent.yml');
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessageRegExp #^File ".+/Fixtures/not_readable.yml" cannot be read\.$#
-     */
     public function testParsingNotReadableFilesThrowsException()
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessageRegExp('#^File ".+/Fixtures/not_readable.yml" cannot be read\.$#');
         if ('\\' === \DIRECTORY_SEPARATOR) {
             $this->markTestSkipped('chmod is not supported on Windows');
         }
@@ -1987,7 +1942,7 @@ YAML;
                 'b' => 'bar',
                 'c' => 'baz',
             ],
-            'mergekeyderef' => [
+            'mergekeyderef'  => [
                 'd' => 'quux',
                 'b' => 'bar',
                 'c' => 'baz',
@@ -2015,7 +1970,7 @@ YAML;
                 'b' => 'bar',
                 'c' => 'baz',
             ],
-            'mergekeyderef' => (object) [
+            'mergekeyderef'  => (object) [
                 'd' => 'quux',
                 'b' => 'bar',
                 'c' => 'baz',
@@ -2025,12 +1980,10 @@ YAML;
         $this->assertEquals($expected, $this->parser->parse($yaml, Yaml::PARSE_OBJECT_FOR_MAP));
     }
 
-    /**
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessage Reference "foo" does not exist
-     */
     public function testEvalRefException()
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('Reference "foo" does not exist');
         $yaml = <<<EOE
 foo: { &foo { a: Steve, <<: *foo} }
 EOE;
@@ -2039,11 +1992,11 @@ EOE;
 
     /**
      * @dataProvider circularReferenceProvider
-     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     * @expectedExceptionMessage Circular reference [foo, bar, foo] detected
      */
     public function testDetectCircularReferences($yaml)
     {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('Circular reference [foo, bar, foo] detected');
         $this->parser->parse($yaml, Yaml::PARSE_CUSTOM_TAGS);
     }
 

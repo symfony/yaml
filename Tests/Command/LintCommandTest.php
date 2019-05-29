@@ -90,11 +90,9 @@ YAML;
         $this->assertSame(1, $ret, 'lint:yaml exits with code 1 in case of error');
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testLintFileNotReadable()
     {
+        $this->expectException(\RuntimeException::class);
         $tester = $this->createCommandTester();
         $filename = $this->createFile('');
         unlink($filename);
@@ -127,13 +125,13 @@ YAML;
         return new CommandTester($command);
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->files = [];
         @mkdir(sys_get_temp_dir().'/framework-yml-lint-test');
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         foreach ($this->files as $file) {
             if (file_exists($file)) {
