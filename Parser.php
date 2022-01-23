@@ -99,6 +99,7 @@ class Parser
             if (null !== $mbEncoding) {
                 mb_internal_encoding($mbEncoding);
             }
+            $this->offset = 0;
             $this->lines = [];
             $this->currentLine = '';
             $this->numberOfParsedLines = 0;
