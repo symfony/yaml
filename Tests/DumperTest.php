@@ -1085,38 +1085,122 @@ YAML;
                 ],
             ],
         ];
-        $expected = <<<YAML
+
+        yield 'Compact nested mapping 1' => [
+            $data,
+            <<<YAML
 planets:
-\t- name: Mercury
-\t  distance: 57910000
-\t  properties:
-\t\t  - name: size
-\t\t    value: 4879
-\t\t  - name: moons
-\t\t    value: 0
-\t\t  - - - {  }
-\t- name: Jupiter
-\t  distance: 778500000
-\t  properties:
-\t\t  - name: size
-\t\t    value: 139820
-\t\t  - name: moons
-\t\t    value: 79
-\t\t  - - {  }
+ - name: Mercury
+   distance: 57910000
+   properties:
+    - name: size
+      value: 4879
+    - name: moons
+      value: 0
+    -
+     -
+      - {  }
+ - name: Jupiter
+   distance: 778500000
+   properties:
+    - name: size
+      value: 139820
+    - name: moons
+      value: 79
+    -
+     - {  }
 
-YAML;
+YAML,
+            1,
+        ];
 
-        for ($indentation = 1; $indentation < 5; ++$indentation) {
-            yield \sprintf('Compact nested mapping %d', $indentation) => [
-                $data,
-                strtr($expected, ["\t" => str_repeat(' ', $indentation)]),
-                $indentation,
-            ];
-        }
+        yield 'Compact nested mapping 2' => [
+            $data,
+            <<<YAML
+planets:
+  - name: Mercury
+    distance: 57910000
+    properties:
+      - name: size
+        value: 4879
+      - name: moons
+        value: 0
+      -
+        -
+          - {  }
+  - name: Jupiter
+    distance: 778500000
+    properties:
+      - name: size
+        value: 139820
+      - name: moons
+        value: 79
+      -
+        - {  }
 
-        $indentation = 2;
-        $inline = 4;
-        $expected = <<<YAML
+YAML,
+            2,
+        ];
+
+        yield 'Compact nested mapping 3' => [
+            $data,
+            <<<YAML
+planets:
+   - name: Mercury
+     distance: 57910000
+     properties:
+        - name: size
+          value: 4879
+        - name: moons
+          value: 0
+        -
+           -
+              - {  }
+   - name: Jupiter
+     distance: 778500000
+     properties:
+        - name: size
+          value: 139820
+        - name: moons
+          value: 79
+        -
+           - {  }
+
+YAML,
+            3,
+        ];
+
+        yield 'Compact nested mapping 4' => [
+            $data,
+            <<<YAML
+planets:
+    - name: Mercury
+      distance: 57910000
+      properties:
+          - name: size
+            value: 4879
+          - name: moons
+            value: 0
+          -
+              -
+                  - {  }
+    - name: Jupiter
+      distance: 778500000
+      properties:
+          - name: size
+            value: 139820
+          - name: moons
+            value: 79
+          -
+              - {  }
+
+YAML,
+            4,
+        ];
+
+        yield 'Compact nested mapping 2 and inline 4' => [
+            $data,
+            <<<YAML
 planets:
   - name: Mercury
     distance: 57910000
@@ -1131,13 +1215,9 @@ planets:
       - { name: moons, value: 79 }
       - [{  }]
 
-YAML;
-
-        yield \sprintf('Compact nested mapping %d and inline %d', $indentation, $inline) => [
-            $data,
-            $expected,
-            $indentation,
-            $inline,
+YAML,
+            2,
+            4,
         ];
     }
 
