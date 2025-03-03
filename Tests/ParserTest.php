@@ -1797,6 +1797,69 @@ EOT;
     }
 
     /**
+     * @dataProvider unquotedStringWithTrailingComment
+     */
+    public function testParseMultiLineUnquotedStringWithTrailingComment(string $yaml, array $expected)
+    {
+        $this->assertSame($expected, $this->parser->parse($yaml));
+    }
+
+    public function unquotedStringWithTrailingComment()
+    {
+        return [
+            'comment after comma' => [
+                <<<'YAML'
+                {
+                    foo: 3, # comment
+                    bar: 3
+                }
+                YAML,
+                ['foo' => 3, 'bar' => 3],
+            ],
+            'comment after space' => [
+                <<<'YAML'
+                {
+                    foo: 3 # comment
+                }
+                YAML,
+                ['foo' => 3],
+            ],
+            'comment after space, but missing space after #' => [
+                <<<'YAML'
+                {
+                    foo: 3 #comment
+                }
+                YAML,
+                ['foo' => 3],
+            ],
+            'comment after tab' => [
+                <<<YAML
+                {
+                    foo: 3\t# comment
+                }
+                YAML,
+                ['foo' => 3],
+            ],
+            'comment after tab, but missing space after #' => [
+                <<<YAML
+                {
+                    foo: 3\t#comment
+                }
+                YAML,
+                ['foo' => 3],
+            ],
+            '# in mapping value' => [
+                <<<'YAML'
+                {
+                    foo: example.com/#about
+                }
+                YAML,
+                ['foo' => 'example.com/#about'],
+            ],
+        ];
+    }
+
+    /**
      * @dataProvider escapedQuotationCharactersInQuotedStrings
      */
     public function testParseQuotedStringContainingEscapedQuotationCharacters(string $yaml, array $expected)
