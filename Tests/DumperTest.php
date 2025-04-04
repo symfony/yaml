@@ -918,7 +918,7 @@ YAML;
         $this->assertSame($expected, $this->dumper->dump($input, 0, 0, Yaml::DUMP_FORCE_DOUBLE_QUOTES_ON_VALUES));
     }
 
-    public function getForceQuotesOnValuesData(): iterable
+    public static function getForceQuotesOnValuesData(): iterable
     {
         yield 'empty string' => [
             ['foo' => ''],
