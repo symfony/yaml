@@ -750,7 +750,7 @@ class Inline
                             if (false !== $scalar = $time->getTimestamp()) {
                                 return $scalar;
                             }
-                        } catch (\ValueError) {
+                        } catch (\DateRangeError|\ValueError) {
                             // no-op
                         }
 
