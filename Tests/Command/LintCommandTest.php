@@ -180,7 +180,12 @@ YAML;
     protected function createCommand(): Command
     {
         $application = new Application();
-        $application->add(new LintCommand());
+        $command = new LintCommand();
+        if (method_exists($application, 'addCommand')) {
+            $application->addCommand($command);
+        } else {
+            $application->add($command);
+        }
 
         return $application->find('lint:yaml');
     }
