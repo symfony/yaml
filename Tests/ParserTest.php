@@ -20,8 +20,6 @@ use Symfony\Component\Yaml\Yaml;
 
 class ParserTest extends TestCase
 {
-    use ExpectUserDeprecationMessageTrait;
-
     private ?Parser $parser;
 
     protected function setUp(): void
@@ -1059,12 +1057,9 @@ EOD;
         return $tests;
     }
 
-    /**
-     * @group legacy
-     */
     public function testNullAsDuplicatedData()
     {
-        $this->expectUserDeprecationMessage('Since symfony/yaml 7.2: Duplicate key "child" detected on line 4 whilst parsing YAML. Silent handling of duplicate mapping keys in YAML is deprecated and will throw a ParseException in 8.0.');
+        $this->expectException(ParseException::class);
 
         $yaml = <<<EOD
 parent:
