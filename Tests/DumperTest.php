@@ -946,7 +946,7 @@ YAML;
         ];
 
         yield 'backslash' => [
-            ['foo' => "back\\slash"],
+            ['foo' => 'back\\slash'],
             '{ foo: "back\\\\slash" }',
         ];
 
