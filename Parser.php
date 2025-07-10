@@ -50,11 +50,11 @@ class Parser
     public function parseFile(string $filename, int $flags = 0): mixed
     {
         if (!is_file($filename)) {
-            throw new ParseException(sprintf('File "%s" does not exist.', $filename));
+            throw new ParseException(\sprintf('File "%s" does not exist.', $filename));
         }
 
         if (!is_readable($filename)) {
-            throw new ParseException(sprintf('File "%s" cannot be read.', $filename));
+            throw new ParseException(\sprintf('File "%s" cannot be read.', $filename));
         }
 
         $this->filename = $filename;
@@ -235,10 +235,10 @@ class Parser
                         $refName = substr(rtrim($values['value']), 1);
                         if (!\array_key_exists($refName, $this->refs)) {
                             if (false !== $pos = array_search($refName, $this->refsBeingParsed, true)) {
-                                throw new ParseException(sprintf('Circular reference [%s] detected for reference "%s".', implode(', ', array_merge(\array_slice($this->refsBeingParsed, $pos), [$refName])), $refName), $this->currentLineNb + 1, $this->currentLine, $this->filename);
+                                throw new ParseException(\sprintf('Circular reference [%s] detected for reference "%s".', implode(', ', array_merge(\array_slice($this->refsBeingParsed, $pos), [$refName])), $refName), $this->currentLineNb + 1, $this->currentLine, $this->filename);
                             }
 
-                            throw new ParseException(sprintf('Reference "%s" does not exist.', $refName), $this->getRealCurrentLineNb() + 1, $this->currentLine, $this->filename);
+                            throw new ParseException(\sprintf('Reference "%s" does not exist.', $refName), $this->getRealCurrentLineNb() + 1, $this->currentLine, $this->filename);
                         }
 
                         $refValue = $this->refs[$refName];
@@ -311,7 +311,7 @@ class Parser
                                 $data[$key] = null;
                             }
                         } else {
-                            throw new ParseException(sprintf('Duplicate key "%s" detected.', $key), $this->getRealCurrentLineNb() + 1, $this->currentLine);
+                            throw new ParseException(\sprintf('Duplicate key "%s" detected.', $key), $this->getRealCurrentLineNb() + 1, $this->currentLine);
                         }
                     } else {
                         // remember the parsed line number here in case we need it to provide some contexts in error messages below
@@ -334,7 +334,7 @@ class Parser
                                 $data[$key] = $value;
                             }
                         } else {
-                            throw new ParseException(sprintf('Duplicate key "%s" detected.', $key), $realCurrentLineNbKey + 1, $this->currentLine);
+                            throw new ParseException(\sprintf('Duplicate key "%s" detected.', $key), $realCurrentLineNbKey + 1, $this->currentLine);
                         }
                     }
                 } else {
@@ -344,7 +344,7 @@ class Parser
                     if ($allowOverwrite || !isset($data[$key])) {
                         $data[$key] = $value;
                     } else {
-                        throw new ParseException(sprintf('Duplicate key "%s" detected.', $key), $this->getRealCurrentLineNb() + 1, $this->currentLine);
+                        throw new ParseException(\sprintf('Duplicate key "%s" detected.', $key), $this->getRealCurrentLineNb() + 1, $this->currentLine);
                     }
                 }
                 if ($isRef) {
@@ -711,10 +711,10 @@ class Parser
 
             if (!\array_key_exists($value, $this->refs)) {
                 if (false !== $pos = array_search($value, $this->refsBeingParsed, true)) {
-                    throw new ParseException(sprintf('Circular reference [%s] detected for reference "%s".', implode(', ', array_merge(\array_slice($this->refsBeingParsed, $pos), [$value])), $value), $this->currentLineNb + 1, $this->currentLine, $this->filename);
+                    throw new ParseException(\sprintf('Circular reference [%s] detected for reference "%s".', implode(', ', array_merge(\array_slice($this->refsBeingParsed, $pos), [$value])), $value), $this->currentLineNb + 1, $this->currentLine, $this->filename);
                 }
 
-                throw new ParseException(sprintf('Reference "%s" does not exist.', $value), $this->currentLineNb + 1, $this->currentLine, $this->filename);
+                throw new ParseException(\sprintf('Reference "%s" does not exist.', $value), $this->currentLineNb + 1, $this->currentLine, $this->filename);
             }
 
             return $this->refs[$value];
@@ -754,7 +754,7 @@ class Parser
                     $parsedValue = Inline::parse($this->lexInlineQuotedString($cursor), $flags, $this->refs);
 
                     if (isset($this->currentLine[$cursor]) && preg_replace('/\s*(#.*)?$/A', '', substr($this->currentLine, $cursor))) {
-                        throw new ParseException(sprintf('Unexpected characters near "%s".', substr($this->currentLine, $cursor)));
+                        throw new ParseException(\sprintf('Unexpected characters near "%s".', substr($this->currentLine, $cursor)));
                     }
 
                     return $parsedValue;
@@ -839,7 +839,7 @@ class Parser
         }
 
         if ($indentation > 0) {
-            $pattern = sprintf('/^ {%d}(.*)$/', $indentation);
+            $pattern = \sprintf('/^ {%d}(.*)$/', $indentation);
 
             while (
                 $notEOF && (
@@ -1081,14 +1081,14 @@ class Parser
 
         // Built-in tags
         if ($tag && '!' === $tag[0]) {
-            throw new ParseException(sprintf('The built-in tag "!%s" is not implemented.', $tag), $this->getRealCurrentLineNb() + 1, $value, $this->filename);
+            throw new ParseException(\sprintf('The built-in tag "!%s" is not implemented.', $tag), $this->getRealCurrentLineNb() + 1, $value, $this->filename);
         }
 
         if (Yaml::PARSE_CUSTOM_TAGS & $flags) {
             return $tag;
         }
 
-        throw new ParseException(sprintf('Tags support is not enabled. You must use the flag "Yaml::PARSE_CUSTOM_TAGS" to use "%s".', $matches['tag']), $this->getRealCurrentLineNb() + 1, $value, $this->filename);
+        throw new ParseException(\sprintf('Tags support is not enabled. You must use the flag "Yaml::PARSE_CUSTOM_TAGS" to use "%s".', $matches['tag']), $this->getRealCurrentLineNb() + 1, $value, $this->filename);
     }
 
     private function lexInlineQuotedString(int &$cursor = 0): string
@@ -1159,8 +1159,8 @@ class Parser
     {
         $offset = $cursor;
 
-        while ($cursor < strlen($this->currentLine)) {
-            if (in_array($this->currentLine[$cursor], ['[', ']', '{', '}', ',', ':'], true)) {
+        while ($cursor < \strlen($this->currentLine)) {
+            if (\in_array($this->currentLine[$cursor], ['[', ']', '{', '}', ',', ':'], true)) {
                 break;
             }
 
@@ -1217,8 +1217,8 @@ class Parser
                         $value .= $this->currentLine[$cursor];
                         ++$cursor;
 
-                        if ($consumeUntilEol && isset($this->currentLine[$cursor]) && ($whitespaces = strspn($this->currentLine, ' ', $cursor) + $cursor) < strlen($this->currentLine) && '#' !== $this->currentLine[$whitespaces]) {
-                            throw new ParseException(sprintf('Unexpected token "%s".', trim(substr($this->currentLine, $cursor))));
+                        if ($consumeUntilEol && isset($this->currentLine[$cursor]) && ($whitespaces = strspn($this->currentLine, ' ', $cursor) + $cursor) < \strlen($this->currentLine) && '#' !== $this->currentLine[$whitespaces]) {
+                            throw new ParseException(\sprintf('Unexpected token "%s".', trim(substr($this->currentLine, $cursor))));
                         }
 
                         return $value;
