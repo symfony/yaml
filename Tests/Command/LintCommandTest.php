@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\Yaml\Tests\Command;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
@@ -152,9 +153,7 @@ YAML;
         $tester->execute(['filename' => $filename], ['decorated' => false]);
     }
 
-    /**
-     * @dataProvider provideCompletionSuggestions
-     */
+    #[DataProvider('provideCompletionSuggestions')]
     public function testComplete(array $input, array $expectedSuggestions)
     {
         $tester = new CommandCompletionTester($this->createCommand());
