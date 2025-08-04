@@ -11,6 +11,8 @@
 
 namespace Symfony\Component\Yaml\Tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Parser;
@@ -142,9 +144,7 @@ YAML;
         $this->parser->parse($yml, Yaml::PARSE_CUSTOM_TAGS);
     }
 
-    /**
-     * @dataProvider getDataFormSpecifications
-     */
+    #[DataProvider('getDataFormSpecifications')]
     public function testSpecifications($expected, $yaml, $comment)
     {
         $this->assertEquals($expected, var_export($this->parser->parse($yaml), true), $comment);
@@ -160,9 +160,7 @@ YAML;
         return self::loadTestsFromFixtureFiles('nonStringKeys.yml');
     }
 
-    /**
-     * @dataProvider invalidIndentation
-     */
+    #[DataProvider('invalidIndentation')]
     public function testTabsAsIndentationInYaml(string $given, string $expectedMessage)
     {
         $this->expectException(ParseException::class);
@@ -206,9 +204,7 @@ YAML;
         $this->parser->parse("abc:\n\tabc");
     }
 
-    /**
-     * @dataProvider validTokenSeparators
-     */
+    #[DataProvider('validTokenSeparators')]
     public function testValidTokenSeparation(string $given, array $expected)
     {
         $actual = $this->parser->parse($given);
@@ -555,9 +551,7 @@ EOF;
         return $tests;
     }
 
-    /**
-     * @dataProvider getBlockChompingTests
-     */
+    #[DataProvider('getBlockChompingTests')]
     public function testBlockChomping($expected, $yaml)
     {
         $this->assertSame($expected, $this->parser->parse($yaml));
@@ -602,9 +596,7 @@ EOF;
         $this->assertSameData(['foo' => null, 'bar' => 1], $this->parser->parse($input), '->parse() does not parse objects');
     }
 
-    /**
-     * @dataProvider getObjectForMapTests
-     */
+    #[DataProvider('getObjectForMapTests')]
     public function testObjectForMap($yaml, $expected)
     {
         $flags = Yaml::PARSE_OBJECT_FOR_MAP;
@@ -712,9 +704,7 @@ EOF;
         $this->assertSame($expected, $this->parser->parse($yaml));
     }
 
-    /**
-     * @requires extension iconv
-     */
+    #[RequiresPhpExtension('iconv')]
     public function testNonUtf8Exception()
     {
         $yamls = [
@@ -889,9 +879,7 @@ EOT;
         return $tests;
     }
 
-    /**
-     * @dataProvider getParseExceptionNotAffectedMultiLineStringLastResortParsing
-     */
+    #[DataProvider('getParseExceptionNotAffectedMultiLineStringLastResortParsing')]
     public function testParseExceptionNotAffectedByMultiLineStringLastResortParsing($yaml)
     {
         $this->expectException(ParseException::class);
@@ -988,9 +976,7 @@ EOD;
         Yaml::parse($input);
     }
 
-    /**
-     * @dataProvider getParseExceptionOnDuplicateData
-     */
+    #[DataProvider('getParseExceptionOnDuplicateData')]
     public function testParseExceptionOnDuplicate($input, $duplicateKey, $lineNumber)
     {
         $this->expectException(ParseException::class);
@@ -1313,9 +1299,7 @@ EOT;
         $this->assertSame(['foo' => ['bar' => 'foobar']], $this->parser->parse($yaml));
     }
 
-    /**
-     * @dataProvider getCommentLikeStringInScalarBlockData
-     */
+    #[DataProvider('getCommentLikeStringInScalarBlockData')]
     public function testCommentLikeStringsAreNotStrippedInBlockScalars($yaml, $expectedParserResult)
     {
         $this->assertSame($expectedParserResult, $this->parser->parse($yaml));
@@ -1498,9 +1482,7 @@ EOT
         );
     }
 
-    /**
-     * @dataProvider getBinaryData
-     */
+    #[DataProvider('getBinaryData')]
     public function testParseBinaryData($data)
     {
         $this->assertSame(['data' => 'Hello world'], $this->parser->parse($data));
@@ -1527,9 +1509,7 @@ EOT,
         ];
     }
 
-    /**
-     * @dataProvider getInvalidBinaryData
-     */
+    #[DataProvider('getInvalidBinaryData')]
     public function testParseInvalidBinaryData($data, $expectedMessage)
     {
         $this->expectException(ParseException::class);
@@ -1602,9 +1582,7 @@ EOT;
         $this->assertSameData(['date' => $expectedDate], $this->parser->parse($yaml, Yaml::PARSE_DATETIME));
     }
 
-    /**
-     * @dataProvider parserThrowsExceptionWithCorrectLineNumberProvider
-     */
+    #[DataProvider('parserThrowsExceptionWithCorrectLineNumberProvider')]
     public function testParserThrowsExceptionWithCorrectLineNumber($lineNumber, $yaml)
     {
         $this->expectException(ParseException::class);
@@ -1749,9 +1727,7 @@ YAML;
         $this->assertSame($expected, $this->parser->parse($yaml));
     }
 
-    /**
-     * @dataProvider wrappedUnquotedStringsProvider
-     */
+    #[DataProvider('wrappedUnquotedStringsProvider')]
     public function testWrappedUnquotedStringWithMultipleSpacesInValue(string $yaml, array $expected)
     {
         $this->assertSame($expected, $this->parser->parse($yaml));
@@ -1790,9 +1766,7 @@ EOT;
         $this->assertSame(['foo' => 'bar baz foobar foo', 'bar' => 'baz'], $this->parser->parse($yaml));
     }
 
-    /**
-     * @dataProvider unquotedStringWithTrailingComment
-     */
+    #[DataProvider('unquotedStringWithTrailingComment')]
     public function testParseMultiLineUnquotedStringWithTrailingComment(string $yaml, array $expected)
     {
         $this->assertSame($expected, $this->parser->parse($yaml));
@@ -1853,9 +1827,7 @@ EOT;
         ];
     }
 
-    /**
-     * @dataProvider escapedQuotationCharactersInQuotedStrings
-     */
+    #[DataProvider('escapedQuotationCharactersInQuotedStrings')]
     public function testParseQuotedStringContainingEscapedQuotationCharacters(string $yaml, array $expected)
     {
         $this->assertSame($expected, $this->parser->parse($yaml));
@@ -1911,9 +1883,7 @@ YAML
         $this->assertSame("foo bar\nbaz", $this->parser->parse("foo\nbar\n\nbaz"));
     }
 
-    /**
-     * @dataProvider multiLineDataProvider
-     */
+    #[DataProvider('multiLineDataProvider')]
     public function testParseMultiLineMappingValue($yaml, $expected, $parseError)
     {
         $this->assertSame($expected, $this->parser->parse($yaml));
@@ -1978,9 +1948,7 @@ EOF;
         return $tests;
     }
 
-    /**
-     * @dataProvider inlineNotationSpanningMultipleLinesProvider
-     */
+    #[DataProvider('inlineNotationSpanningMultipleLinesProvider')]
     public function testInlineNotationSpanningMultipleLines($expected, string $yaml)
     {
         $this->assertSame($expected, $this->parser->parse($yaml));
@@ -2404,9 +2372,7 @@ YAML;
         $this->parser->parse('["\\"]');
     }
 
-    /**
-     * @dataProvider taggedValuesProvider
-     */
+    #[DataProvider('taggedValuesProvider')]
     public function testCustomTagSupport($expected, $yaml)
     {
         $this->assertSameData($expected, $this->parser->parse($yaml, Yaml::PARSE_CUSTOM_TAGS));
@@ -2835,9 +2801,7 @@ EOE;
         $this->parser->parse($yaml);
     }
 
-    /**
-     * @dataProvider circularReferenceProvider
-     */
+    #[DataProvider('circularReferenceProvider')]
     public function testDetectCircularReferences($yaml)
     {
         $this->expectException(ParseException::class);
@@ -2915,9 +2879,7 @@ YAML;
         $this->assertSame($expected, $this->parser->parse($yaml));
     }
 
-    /**
-     * @dataProvider indentedMappingData
-     */
+    #[DataProvider('indentedMappingData')]
     public function testParseIndentedMappings($yaml, $expected)
     {
         $this->assertSame($expected, $this->parser->parse($yaml));

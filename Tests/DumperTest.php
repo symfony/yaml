@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\Yaml\Tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Exception\DumpException;
@@ -273,9 +274,7 @@ EOF;
         $this->assertSame('null', $this->dumper->dump(null, 2, flags: Yaml::DUMP_NULL_AS_EMPTY));
     }
 
-    /**
-     * @dataProvider getEscapeSequences
-     */
+    #[DataProvider('getEscapeSequences')]
     public function testEscapedEscapeSequencesInQuotedScalar($input, $expected)
     {
         $this->assertSame($expected, $this->dumper->dump($input));
@@ -322,9 +321,7 @@ EOF;
         $this->assertSame('!!binary ZsM/cg==', $this->dumper->dump("f\xc3\x3fr"));
     }
 
-    /**
-     * @dataProvider objectAsMapProvider
-     */
+    #[DataProvider('objectAsMapProvider')]
     public function testDumpObjectAsMap($object, $expected)
     {
         $yaml = $this->dumper->dump($object, 0, 0, Yaml::DUMP_OBJECT_AS_MAP);
@@ -910,9 +907,7 @@ YAML;
         $this->assertSame('{ foo: ~ }', $this->dumper->dump(['foo' => null], 0, 0, Yaml::DUMP_NULL_AS_TILDE));
     }
 
-    /**
-     * @dataProvider getForceQuotesOnValuesData
-     */
+    #[DataProvider('getForceQuotesOnValuesData')]
     public function testCanForceQuotesOnValues(array $input, string $expected)
     {
         $this->assertSame($expected, $this->dumper->dump($input, 0, 0, Yaml::DUMP_FORCE_DOUBLE_QUOTES_ON_VALUES));
@@ -991,9 +986,7 @@ YAML;
         ];
     }
 
-    /**
-     * @dataProvider getNumericKeyData
-     */
+    #[DataProvider('getNumericKeyData')]
     public function testDumpInlineNumericKeyAsString(array $input, bool $inline, int $flags, string $expected)
     {
         $this->assertSame($expected, $this->dumper->dump($input, $inline ? 0 : 4, 0, $flags));
@@ -1096,9 +1089,7 @@ YAML;
         ], 2));
     }
 
-    /**
-     * @dataProvider getDateTimeData
-     */
+    #[DataProvider('getDateTimeData')]
     public function testDumpDateTime(array $input, string $expected)
     {
         $this->assertSame($expected, rtrim($this->dumper->dump($input, 1)));
@@ -1302,9 +1293,7 @@ YAML,
         ];
     }
 
-    /**
-     * @dataProvider getDumpCompactNestedMapping
-     */
+    #[DataProvider('getDumpCompactNestedMapping')]
     public function testDumpCompactNestedMapping(array $data, string $expected, int $indentation, int $inline = 10)
     {
         $dumper = new Dumper($indentation);
