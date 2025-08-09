@@ -1077,8 +1077,8 @@ class InlineTest extends TestCase
     public function testParseQuotedReferenceLikeStringsInMapping()
     {
         $yaml = <<<YAML
-{foo: '&foo', bar: "&bar", baz: !!str '&baz'}
-YAML;
+            {foo: '&foo', bar: "&bar", baz: !!str '&baz'}
+            YAML;
 
         $this->assertSame(['foo' => '&foo', 'bar' => '&bar', 'baz' => '&baz'], Inline::parse($yaml));
     }
@@ -1086,8 +1086,8 @@ YAML;
     public function testParseQuotedReferenceLikeStringsInSequence()
     {
         $yaml = <<<YAML
-['&foo', "&bar", !!str '&baz']
-YAML;
+            ['&foo', "&bar", !!str '&baz']
+            YAML;
 
         $this->assertSame(['&foo', '&bar', '&baz'], Inline::parse($yaml));
     }
