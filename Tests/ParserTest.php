@@ -32,7 +32,7 @@ class ParserTest extends TestCase
     {
         $this->parser = null;
 
-        chmod(__DIR__.'/Fixtures/not_readable.yml', 0644);
+        chmod(__DIR__.'/Fixtures/not_readable.yml', 0o644);
     }
 
     public function testTopLevelNumber()
@@ -2725,7 +2725,7 @@ class ParserTest extends TestCase
         }
 
         $file = __DIR__.'/Fixtures/not_readable.yml';
-        chmod($file, 0200);
+        chmod($file, 0o200);
 
         $this->expectException(ParseException::class);
         $this->expectExceptionMessageMatches('#^File ".+/Fixtures/not_readable.yml" cannot be read\.$#');
