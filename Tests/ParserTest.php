@@ -1338,8 +1338,7 @@ class ParserTest extends TestCase
                             </body>
 
                         footer # comment3
-                        EOT
-                    ,
+                        EOT,
                 ],
             ],
         ];
@@ -1366,8 +1365,7 @@ class ParserTest extends TestCase
                 # bar
                 baz
 
-                EOT
-            ,
+                EOT,
             'collection' => [
                 [
                     'one' => <<<'EOT'
@@ -1375,16 +1373,14 @@ class ParserTest extends TestCase
                         # bar
                         baz
 
-                        EOT
-                    ,
+                        EOT,
                 ],
                 [
                     'two' => <<<'EOT'
                         foo
                         # bar
                         baz
-                        EOT
-                    ,
+                        EOT,
                 ],
             ],
         ];
@@ -1448,8 +1444,7 @@ class ParserTest extends TestCase
                 'test' => <<<'EOT'
                     <h2>A heading</h2>
                     <ul> <li>a list</li> <li>may be a good example</li> </ul>
-                    EOT
-                ,
+                    EOT,
             ],
             $this->parser->parse($yaml)
         );
@@ -1475,8 +1470,7 @@ class ParserTest extends TestCase
                       <li>a list</li>
                       <li>may be a good example</li>
                     </ul>
-                    EOT
-                ,
+                    EOT,
             ],
             $this->parser->parse($yaml)
         );
@@ -1529,32 +1523,28 @@ class ParserTest extends TestCase
                 <<<'EOT'
                     data: !!binary |
                         SGVsbG8d29ybGQ=
-                    EOT
-                ,
+                    EOT,
                 '/The normalized base64 encoded data \(data without whitespace characters\) length must be a multiple of four \(\d+ bytes given\)/',
             ],
             'invalid characters in block scalar' => [
                 <<<'EOT'
                     data: !!binary |
                         SGVsbG8#d29ybGQ=
-                    EOT
-                ,
+                    EOT,
                 '/The base64 encoded data \(.*\) contains invalid characters/',
             ],
             'too many equals characters in block scalar' => [
                 <<<'EOT'
                     data: !!binary |
                         SGVsbG8gd29yb===
-                    EOT
-                ,
+                    EOT,
                 '/The base64 encoded data \(.*\) contains invalid characters/',
             ],
             'misplaced equals character in block scalar' => [
                 <<<'EOT'
                     data: !!binary |
                         SGVsbG8gd29ybG=Q
-                    EOT
-                ,
+                    EOT,
                 '/The base64 encoded data \(.*\) contains invalid characters/',
             ],
         ];
@@ -1842,8 +1832,7 @@ class ParserTest extends TestCase
                      - message: 'No emails received before timeout - Address: ''test@testemail.company.com''
                            Keyword: ''Your Order confirmation'' ttl: 50'
                        outcome: failed
-                    YAML
-                ,
+                    YAML,
                 [
                     'entries' => [
                         [
@@ -1859,8 +1848,7 @@ class ParserTest extends TestCase
                      - message: "No emails received before timeout - Address: \"test@testemail.company.com\"
                            Keyword: \"Your Order confirmation\" ttl: 50"
                        outcome: failed
-                    YAML
-                ,
+                    YAML,
                 [
                     'entries' => [
                         [
@@ -1964,8 +1952,7 @@ class ParserTest extends TestCase
                         'foo': 'bar',
                         'bar': 'baz'
                     }
-                    YAML
-                ,
+                    YAML,
             ],
             'mapping with unquoted strings and values' => [
                 ['foo' => 'bar', 'bar' => 'baz'],
@@ -1974,8 +1961,7 @@ class ParserTest extends TestCase
                         foo: bar,
                         bar: baz
                     }
-                    YAML
-                ,
+                    YAML,
             ],
             'sequence' => [
                 ['foo', 'bar'],
@@ -1984,8 +1970,7 @@ class ParserTest extends TestCase
                         'foo',
                         'bar'
                     ]
-                    YAML
-                ,
+                    YAML,
             ],
             'sequence with unquoted items' => [
                 ['foo', 'bar'],
@@ -1994,8 +1979,7 @@ class ParserTest extends TestCase
                         foo,
                         bar
                     ]
-                    YAML
-                ,
+                    YAML,
             ],
             'nested mapping terminating at end of line' => [
                 [
@@ -2006,8 +1990,7 @@ class ParserTest extends TestCase
                 <<<YAML
                     { foo: { bar: foobar }
                     }
-                    YAML
-                ,
+                    YAML,
             ],
             'nested sequence terminating at end of line' => [
                 [
@@ -2041,8 +2024,7 @@ class ParserTest extends TestCase
                         'foo': ['bar', 'foobar'],
                         'bar': ['baz']
                     }
-                    YAML
-                ,
+                    YAML,
             ],
             'sequence spanning multiple lines nested in mapping' => [
                 [
@@ -2057,8 +2039,7 @@ class ParserTest extends TestCase
                         bar,
                         baz
                     ]
-                    YAML
-                ,
+                    YAML,
             ],
             'sequence spanning multiple lines nested in mapping with a following mapping' => [
                 [
@@ -2091,8 +2072,7 @@ class ParserTest extends TestCase
                         bar,
                         baz
                     ]]
-                    YAML
-                ,
+                    YAML,
             ],
             'nested sequence nested in mapping starting on the following line' => [
                 [
@@ -2110,8 +2090,7 @@ class ParserTest extends TestCase
                             bar,
                             baz
                     ]]
-                    YAML
-                ,
+                    YAML,
             ],
             'mapping nested in sequence' => [
                 ['foo', ['bar' => 'baz']],
@@ -2122,8 +2101,7 @@ class ParserTest extends TestCase
                             'bar': 'baz'
                         }
                     ]
-                    YAML
-                ,
+                    YAML,
             ],
             'mapping spanning multiple lines nested in sequence' => [
                 [
@@ -2137,8 +2115,7 @@ class ParserTest extends TestCase
                         foo: bar,
                         bar: baz
                     }
-                    YAML
-                ,
+                    YAML,
             ],
             'nested mapping nested in sequence starting on the same line' => [
                 [
@@ -2155,8 +2132,7 @@ class ParserTest extends TestCase
                         },
                         bar: baz
                     }
-                    YAML
-                ,
+                    YAML,
             ],
             'nested mapping nested in sequence starting on the following line' => [
                 [
@@ -2174,8 +2150,7 @@ class ParserTest extends TestCase
                         },
                         bar: baz
                     }
-                    YAML
-                ,
+                    YAML,
             ],
             'single quoted multi-line string' => [
                 "foo\nbar",
@@ -2183,8 +2158,7 @@ class ParserTest extends TestCase
                     'foo
 
                     bar'
-                    YAML
-                ,
+                    YAML,
             ],
             'double quoted multi-line string' => [
                 "foo\nbar",
@@ -2192,8 +2166,7 @@ class ParserTest extends TestCase
                     'foo
 
                     bar'
-                    YAML
-                ,
+                    YAML,
             ],
             'single-quoted multi-line mapping value' => [
                 ['foo' => "bar\nbaz"],
