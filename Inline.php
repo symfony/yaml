@@ -459,7 +459,7 @@ class Inline
             }
 
             if ('!php/const' === $key || '!php/enum' === $key) {
-                $key .= ' '.self::parseScalar($mapping, $flags, [':'], $i, false);
+                $key .= ' '.self::parseScalar($mapping, $flags, ['(?<!:):(?!:)'], $i, false);
                 $key = self::evaluateScalar($key, $flags);
             }
 
