@@ -1797,6 +1797,73 @@ EOT;
     }
 
     /**
+     * @dataProvider getUnquotedMultilineScalarIgnoresCommentsData
+     */
+    public function testUnquotedMultilineScalarIgnoresComments(string $yaml, array $expected)
+    {
+        $this->assertSame($expected, $this->parser->parse($yaml));
+    }
+
+    public static function getUnquotedMultilineScalarIgnoresCommentsData()
+    {
+        yield 'comments interspersed' => [
+            <<<YAML
+                key: unquoted
+                  # this comment should be ignored
+                  next line
+                  # another comment
+                  final line
+                another_key: works
+                YAML,
+            [
+                'key' => 'unquoted next line final line',
+                'another_key' => 'works',
+            ],
+        ];
+
+        yield 'only comments' => [
+            <<<YAML
+                key: unquoted
+                  # this comment should be ignored
+                  # another comment
+                another_key: works
+                YAML,
+            [
+                'key' => 'unquoted',
+                'another_key' => 'works',
+            ],
+        ];
+
+        yield 'blank lines and comments' => [
+            <<<YAML
+                key: unquoted
+                  next line
+
+                  # this comment should be ignored
+                  final line
+                another_key: works
+                YAML,
+            [
+                'key' => "unquoted next line\nfinal line",
+                'another_key' => 'works',
+            ],
+        ];
+
+        yield 'comment at end' => [
+            <<<YAML
+                key: unquoted
+                  next line
+                  # comment at end
+                another_key: works
+                YAML,
+            [
+                'key' => 'unquoted next line',
+                'another_key' => 'works',
+            ],
+        ];
+    }
+
+    /**
      * @dataProvider unquotedStringWithTrailingComment
      */
     public function testParseMultiLineUnquotedStringWithTrailingComment(string $yaml, array $expected)
