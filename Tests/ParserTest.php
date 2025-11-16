@@ -1797,26 +1797,23 @@ EOT;
     }
 
     /**
-     * @dataProvider getUnquotedMultilineScalarIgnoresCommentsData
+     * @dataProvider getUnquotedMultilineScalarHandlesCommentsAndBlanksData
      */
-    public function testUnquotedMultilineScalarIgnoresComments(string $yaml, array $expected)
+    public function testUnquotedMultilineScalarHandlesCommentsAndBlanks(string $yaml, array $expected)
     {
         $this->assertSame($expected, $this->parser->parse($yaml));
     }
 
-    public static function getUnquotedMultilineScalarIgnoresCommentsData()
+    public static function getUnquotedMultilineScalarHandlesCommentsAndBlanksData()
     {
-        yield 'comments interspersed' => [
+        yield 'comments interspersed stops scalar' => [
             <<<YAML
                 key: unquoted
-                  # this comment should be ignored
-                  next line
-                  # another comment
-                  final line
+                  # this comment terminates
                 another_key: works
                 YAML,
             [
-                'key' => 'unquoted next line final line',
+                'key' => 'unquoted',
                 'another_key' => 'works',
             ],
         ];
@@ -1834,17 +1831,16 @@ EOT;
             ],
         ];
 
-        yield 'blank lines and comments' => [
+        yield 'blank lines are preserved and comment stops scalar' => [
             <<<YAML
                 key: unquoted
                   next line
 
-                  # this comment should be ignored
-                  final line
+                  # this comment terminates the scalar
                 another_key: works
                 YAML,
             [
-                'key' => "unquoted next line\nfinal line",
+                'key' => 'unquoted next line',
                 'another_key' => 'works',
             ],
         ];
@@ -1861,6 +1857,21 @@ EOT;
                 'another_key' => 'works',
             ],
         ];
+    }
+
+    public function testUnquotedMultilineScalarThrowsOnOrphanedLineAfterComment()
+    {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('Unable to parse at line 3 (near "  next line")');
+
+        $yaml = <<<YAML
+            key: unquoted
+              # this comment terminates
+              next line
+            another_key: works
+            YAML;
+
+        $this->parser->parse($yaml);
     }
 
     /**
