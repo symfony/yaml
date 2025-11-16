@@ -782,7 +782,7 @@ class Parser
                         }
 
                         if ($this->isCurrentLineComment()) {
-                            continue;
+                            break;
                         }
 
                         $lines[] = trim($this->currentLine);
