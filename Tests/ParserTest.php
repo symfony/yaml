@@ -1874,6 +1874,77 @@ EOT;
         $this->parser->parse($yaml);
     }
 
+    public function testUnquotedMultilineScalarWithBlankLines()
+    {
+        $yaml = <<<YAML
+foo:
+  line 1
+
+  line 2
+YAML;
+        $this->assertSame(['foo' => "line 1\nline 2"], $this->parser->parse($yaml));
+    }
+
+    /**
+     * @dataProvider provideInvalidYamlFiles
+     */
+    public function testLineNumberInException(int $expectedLine, string $yaml, string $message)
+    {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage($message);
+        $this->expectExceptionMessage(\sprintf('at line %d', $expectedLine));
+
+        $this->parser->parse($yaml);
+    }
+
+    public static function provideInvalidYamlFiles(): iterable
+    {
+        yield 'invalid_nested_under_scalar' => [
+            4,
+            <<<YAML
+en:
+  NONAMESPACE: Include Entity without Namespace
+  Invalid: Foo
+    About: 'About us'
+    - Invalid
+YAML,
+            'Unable to parse',
+        ];
+
+        yield 'invalid_nested_under_scalar_with_trailing_newlines' => [
+            4,
+            <<<YAML
+en:
+  NONAMESPACE: Include Entity without Namespace
+  Invalid: Foo
+    About: 'About us'
+    - Invalid
+
+
+YAML,
+            'Unable to parse',
+        ];
+
+        yield 'colon_in_unquoted_value' => [
+            2,
+            <<<YAML
+foo: bar
+  baz: qux
+YAML,
+            'A colon cannot be used in an unquoted mapping value',
+        ];
+
+        yield 'colon_in_unquoted_value_multiline' => [
+            2,
+            <<<YAML
+foo:
+  bar
+  baz: qux
+YAML,
+            'Mapping values are not allowed in multi-line blocks',
+        ];
+    }
+
     /**
      * @dataProvider unquotedStringWithTrailingComment
      */
