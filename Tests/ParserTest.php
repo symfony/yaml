@@ -1065,6 +1065,17 @@ class ParserTest extends TestCase
         $this->assertSame(['hash' => null], Yaml::parse($input));
     }
 
+    public function testLeadingCommentBlockIsIgnored()
+    {
+        $yaml = <<<'EOF'
+            # comment 1
+            # comment 2
+            foo: bar
+            EOF;
+
+        $this->assertSame(['foo' => 'bar'], Yaml::parse($yaml));
+    }
+
     public function testCommentAtTheRootIndent()
     {
         $this->assertSame([
