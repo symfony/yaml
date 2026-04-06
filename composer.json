@@ -30,7 +30,7 @@
         }
     ],
     "require": {
-        "php": ">=8.4",
+        "php": ">=8.4.1",
         "symfony/polyfill-ctype": "^1.8"
     },
     "require-dev": {
