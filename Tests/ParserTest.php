@@ -1315,8 +1315,7 @@ class ParserTest extends TestCase
                             </body>
 
                         footer # comment3
-                        EOT
-                    ,
+                        EOT,
                 ],
             ],
         ];
@@ -1343,8 +1342,7 @@ class ParserTest extends TestCase
                 # bar
                 baz
 
-                EOT
-            ,
+                EOT,
             'collection' => [
                 [
                     'one' => <<<'EOT'
@@ -1352,16 +1350,14 @@ class ParserTest extends TestCase
                         # bar
                         baz
 
-                        EOT
-                    ,
+                        EOT,
                 ],
                 [
                     'two' => <<<'EOT'
                         foo
                         # bar
                         baz
-                        EOT
-                    ,
+                        EOT,
                 ],
             ],
         ];
