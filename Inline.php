@@ -381,6 +381,7 @@ class Inline
                     $value = self::parseMapping($sequence, $flags, $i, $references);
                     break;
                 default:
+                    $hasAnchorAtStart = null === $tag && isset($sequence[$i]) && '&' === $sequence[$i];
                     $value = self::parseScalar($sequence, $flags, [',', ']'], $i, null === $tag, $references, $isQuoted);
 
                     // the value can be an array if a reference has been resolved to an array var
@@ -416,9 +417,9 @@ class Inline
                         }
                     }
 
-                    if (!$isQuoted && \is_string($value) && '' !== $value && '&' === $value[0] && Parser::preg_match(Parser::REFERENCE_PATTERN, $value, $matches)) {
-                        $references[$matches['ref']] = $matches['value'];
-                        $value = $matches['value'];
+                    if ($hasAnchorAtStart && !$isQuoted && \is_string($value) && '' !== $value && '&' === $value[0] && Parser::preg_match(Parser::REFERENCE_PATTERN, $value, $matches)) {
+                        $value = '' === $matches['value'] ? null : $matches['value'];
+                        $references[$matches['ref']] = $value;
                     }
 
                     --$i;
@@ -549,6 +550,7 @@ class Inline
                         }
                         break;
                     default:
+                        $hasAnchorAtStart = null === $tag && isset($mapping[$i]) && '&' === $mapping[$i];
                         $value = self::parseScalar($mapping, $flags, [',', '}', "\n"], $i, null === $tag, $references, $isValueQuoted);
                         // Spec: Keys MUST be unique; first one wins.
                         // Parser cannot abort this mapping earlier, since lines
@@ -557,9 +559,9 @@ class Inline
                         if ('<<' === $key) {
                             $output += $value;
                         } elseif ($allowOverwrite || !isset($output[$key])) {
-                            if (!$isValueQuoted && \is_string($value) && '' !== $value && '&' === $value[0] && !self::isBinaryString($value) && Parser::preg_match(Parser::REFERENCE_PATTERN, $value, $matches)) {
-                                $references[$matches['ref']] = $matches['value'];
-                                $value = $matches['value'];
+                            if ($hasAnchorAtStart && !$isValueQuoted && \is_string($value) && '' !== $value && '&' === $value[0] && !self::isBinaryString($value) && Parser::preg_match(Parser::REFERENCE_PATTERN, $value, $matches)) {
+                                $value = '' === $matches['value'] ? null : $matches['value'];
+                                $references[$matches['ref']] = $value;
                             }
 
                             if (null !== $tag) {
