@@ -606,6 +606,8 @@ class Inline
                 throw new ParseException(sprintf('Reference "%s" does not exist.', $value), self::$parsedLineNumber + 1, $value, self::$parsedFilename);
             }
 
+            $state->countAlias($references[$value], self::$parsedLineNumber + 1, null, self::$parsedFilename);
+
             return $references[$value];
         }
 
