@@ -2954,6 +2954,19 @@ YAML;
         $this->assertSame(['foo' => [null]], (new Parser())->parse("foo:\n-\n\n"));
     }
 
+    public function testParseRejectsDocumentsThatExceedTheDefaultNestingDepth()
+    {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('Maximum nesting depth');
+
+        $yaml = "root:\n";
+        for ($i = 1; $i <= Parser::DEFAULT_MAX_NESTING_LEVEL + 1; ++$i) {
+            $yaml .= str_repeat('  ', $i).sprintf("level%d:\n", $i);
+        }
+
+        $this->parser->parse($yaml);
+    }
+
     private function assertSameData($expected, $actual)
     {
         $this->assertEquals($expected, $actual);

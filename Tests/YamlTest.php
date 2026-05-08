@@ -12,6 +12,7 @@
 namespace Symfony\Component\Yaml\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
 class YamlTest extends TestCase
@@ -36,5 +37,15 @@ class YamlTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('The indentation must be greater than zero');
         Yaml::dump(['lorem' => 'ipsum', 'dolor' => 'sit'], 2, -4);
+    }
+
+    public function testParseAllowsConfiguringTheMaximumNestingLevel()
+    {
+        $yaml = "root:\n  child:\n    grandchild:\n      greatgrandchild: value\n";
+
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('Maximum nesting depth of 2 exceeded');
+
+        Yaml::parse($yaml, 0, 2);
     }
 }

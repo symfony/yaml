@@ -43,16 +43,17 @@ class Yaml
      *     $array = Yaml::parseFile('config.yml');
      *     print_r($array);
      *
-     * @param string $filename The path to the YAML file to be parsed
-     * @param int    $flags    A bit field of PARSE_* constants to customize the YAML parser behavior
+     * @param string $filename        The path to the YAML file to be parsed
+     * @param int    $flags           A bit field of PARSE_* constants to customize the YAML parser behavior
+     * @param int    $maxNestingLevel The maximum nesting depth for nested YAML blocks
      *
      * @return mixed
      *
      * @throws ParseException If the file could not be read or the YAML is not valid
      */
-    public static function parseFile(string $filename, int $flags = 0)
+    public static function parseFile(string $filename, int $flags = 0, int $maxNestingLevel = Parser::DEFAULT_MAX_NESTING_LEVEL)
     {
-        $yaml = new Parser();
+        $yaml = new Parser($maxNestingLevel);
 
         return $yaml->parseFile($filename, $flags);
     }
@@ -66,16 +67,17 @@ class Yaml
      *   print_r($array);
      *  </code>
      *
-     * @param string $input A string containing YAML
-     * @param int    $flags A bit field of PARSE_* constants to customize the YAML parser behavior
+     * @param string $input           A string containing YAML
+     * @param int    $flags           A bit field of PARSE_* constants to customize the YAML parser behavior
+     * @param int    $maxNestingLevel The maximum nesting depth for nested YAML blocks
      *
      * @return mixed
      *
      * @throws ParseException If the YAML is not valid
      */
-    public static function parse(string $input, int $flags = 0)
+    public static function parse(string $input, int $flags = 0, int $maxNestingLevel = Parser::DEFAULT_MAX_NESTING_LEVEL)
     {
-        $yaml = new Parser();
+        $yaml = new Parser($maxNestingLevel);
 
         return $yaml->parse($input, $flags);
     }
