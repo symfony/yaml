@@ -3057,6 +3057,27 @@ YAML;
         $this->parser->parse($yaml, Yaml::PARSE_EXCEPTION_ON_ALIAS);
     }
 
+    public function testParseHandlesLargeYamlHeaders()
+    {
+        $yaml = "%YAML:".str_repeat('1', 100000)."\nfoo: bar\n";
+
+        $this->assertSame(['foo' => 'bar'], $this->parser->parse($yaml));
+    }
+
+    public function testParseHandlesLargeLeadingComments()
+    {
+        $yaml = '#'.str_repeat('comment', 20000)."\nfoo: bar\n";
+
+        $this->assertSame(['foo' => 'bar'], $this->parser->parse($yaml));
+    }
+
+    public function testParseHandlesLargeDocumentMarkers()
+    {
+        $yaml = '--- '.str_repeat('header', 20000)."\nfoo: bar\n...   ";
+
+        $this->assertSame(['foo' => 'bar'], $this->parser->parse($yaml));
+    }
+
     private function assertSameData($expected, $actual)
     {
         $this->assertEquals($expected, $actual);

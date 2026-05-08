@@ -1044,11 +1044,11 @@ class Parser
 
         // strip YAML header
         $count = 0;
-        $value = preg_replace('#^\%YAML[: ][\d\.]+.*\n#u', '', $value, -1, $count);
+        $value = preg_replace('#^%YAML[: ][\d.]++[^\n]*+\n#u', '', $value, -1, $count);
         $this->offset += $count;
 
         // remove leading comments
-        $trimmedValue = preg_replace('#^(\#.*?\n)+#s', '', $value, -1, $count);
+        $trimmedValue = preg_replace('#^(?:\#[^\n]*+\n)++#', '', $value, -1, $count);
         if (1 === $count) {
             // items have been removed, update the offset
             $this->offset += substr_count($value, "\n") - substr_count($trimmedValue, "\n");
@@ -1056,14 +1056,14 @@ class Parser
         }
 
         // remove start of the document marker (---)
-        $trimmedValue = preg_replace('#^\-\-\-.*?\n#s', '', $value, -1, $count);
+        $trimmedValue = preg_replace('#^---[^\n]*+\n#', '', $value, -1, $count);
         if (1 === $count) {
             // items have been removed, update the offset
             $this->offset += substr_count($value, "\n") - substr_count($trimmedValue, "\n");
             $value = $trimmedValue;
 
             // remove end of the document marker (...)
-            $value = preg_replace('#\.\.\.\s*$#', '', $value);
+            $value = preg_replace('#\.\.\.[ \t]*+$#', '', $value);
         }
 
         return $value;
