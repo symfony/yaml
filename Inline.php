@@ -833,6 +833,12 @@ class Inline
     {
         $parsedBinaryData = self::parseScalar(preg_replace('/\s/', '', $scalar));
 
+        if (!\is_scalar($parsedBinaryData ?? '') && !$parsedBinaryData instanceof \Stringable) {
+            throw new ParseException(\sprintf('The "!!binary" tag only supports a base64 encoded string, got "%s".', get_debug_type($parsedBinaryData)), self::$parsedLineNumber + 1, $scalar, self::$parsedFilename);
+        }
+
+        $parsedBinaryData = (string) $parsedBinaryData;
+
         if (0 !== (\strlen($parsedBinaryData) % 4)) {
             throw new ParseException(\sprintf('The normalized base64 encoded data (data without whitespace characters) length must be a multiple of four (%d bytes given).', \strlen($parsedBinaryData)), self::$parsedLineNumber + 1, $scalar, self::$parsedFilename);
         }
