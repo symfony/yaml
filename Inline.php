@@ -652,7 +652,13 @@ class Inline
                                 throw new ParseException('Missing value for tag "!php/object".', self::$parsedLineNumber + 1, $scalar, self::$parsedFilename);
                             }
 
-                            return unserialize(self::parseScalar(substr($scalar, 12)));
+                            $serialized = self::parseScalar(substr($scalar, 12));
+
+                            if (!\is_scalar($serialized ?? '') && !$serialized instanceof \Stringable) {
+                                throw new ParseException(\sprintf('The "!php/object" tag only supports a string value, got "%s".', get_debug_type($serialized)), self::$parsedLineNumber + 1, $scalar, self::$parsedFilename);
+                            }
+
+                            return unserialize((string) $serialized);
                         }
 
                         if (self::$exceptionOnInvalidType) {
@@ -667,7 +673,15 @@ class Inline
                             }
 
                             $i = 0;
-                            if (\defined($const = self::parseScalar(substr($scalar, 11), 0, null, $i, false))) {
+                            $const = self::parseScalar(substr($scalar, 11), 0, null, $i, false);
+
+                            if (!\is_scalar($const ?? '') && !$const instanceof \Stringable) {
+                                throw new ParseException(\sprintf('The "!php/const" tag only supports a string value, got "%s".', get_debug_type($const)), self::$parsedLineNumber + 1, $scalar, self::$parsedFilename);
+                            }
+
+                            $const = (string) $const;
+
+                            if (\defined($const)) {
                                 return \constant($const);
                             }
 
@@ -686,6 +700,12 @@ class Inline
 
                             $i = 0;
                             $enumName = self::parseScalar(substr($scalar, 10), 0, null, $i, false);
+
+                            if (!\is_scalar($enumName ?? '') && !$enumName instanceof \Stringable) {
+                                throw new ParseException(\sprintf('The "!php/enum" tag only supports a string value, got "%s".', get_debug_type($enumName)), self::$parsedLineNumber + 1, $scalar, self::$parsedFilename);
+                            }
+
+                            $enumName = (string) $enumName;
                             $useName = str_contains($enumName, '::');
                             $enum = $useName ? strstr($enumName, '::', true) : $enumName;
 

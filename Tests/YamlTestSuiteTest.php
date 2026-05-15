@@ -232,6 +232,7 @@ class YamlTestSuiteTest extends TestCase
         'QT73',
         'R4YG',
         'RTP8',
+        'S4JQ',
         'SBG9',
         'SM9W-01',
         'T4YY',
@@ -261,7 +262,7 @@ class YamlTestSuiteTest extends TestCase
         $data = Yaml::parseFile($file);
 
         if (!$isErrorExpected) {
-            $this->assertEquals($expected, $data, \sprintf('Test case "%s" (%s) failed.', $testName, $shortcode));
+            $this->assertSame($expected, $data, \sprintf('Test case "%s" (%s) failed.', $testName, $shortcode));
         }
     }
 

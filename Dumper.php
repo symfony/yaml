@@ -110,7 +110,7 @@ class Dumper
                 }
                 $isSequenceItem = !$dumpAsMap;
                 $willBeInlined = $inline - 1 <= 0 || !\is_array($value) && $dumpObjectAsInlineMap || !$value;
-                $isSimpleSequenceHash = !$willBeInlined && $isSequenceItem && \is_array($value) && Inline::isHash($value) && $this->isSimpleInlineMap($value);
+                $isSimpleSequenceHash = !$willBeInlined && $isSequenceItem && \is_array($value) && Inline::isHash($value) && $this->isSimpleSequenceHash($value);
 
                 $output .= \sprintf('%s%s%s%s',
                     $prefix,
@@ -186,7 +186,7 @@ class Dumper
         return '';
     }
 
-    private function isSimpleInlineMap(array $value): bool
+    private function isSimpleSequenceHash(array $value): bool
     {
         foreach ($value as $v) {
             if (\is_array($v) || $v instanceof TaggedValue) {
