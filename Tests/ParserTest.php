@@ -3078,6 +3078,13 @@ YAML;
         $this->assertSame(['foo' => 'bar'], $this->parser->parse($yaml));
     }
 
+    public function testParseHandlesTrailingNewlinesAfterDocumentEndMarker()
+    {
+        $yaml = "---\nfoo: bar\n...\n\n";
+
+        $this->assertSame(['foo' => 'bar'], $this->parser->parse($yaml));
+    }
+
     private function assertSameData($expected, $actual)
     {
         $this->assertEquals($expected, $actual);
