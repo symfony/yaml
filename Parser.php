@@ -122,7 +122,7 @@ class Parser
 
     private function getState(): ParserState
     {
-        return $this->state ?? $this->state = new ParserState();
+        return $this->state ??= new ParserState();
     }
 
     private function doParse(string $value, int $flags): mixed
