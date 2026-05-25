@@ -3228,7 +3228,7 @@ class ParserTest extends TestCase
 
         $yaml = "root:\n";
         for ($i = 1; $i <= Parser::DEFAULT_MAX_NESTING_LEVEL + 1; ++$i) {
-            $yaml .= str_repeat('  ', $i).sprintf("level%d:\n", $i);
+            $yaml .= str_repeat('  ', $i).\sprintf("level%d:\n", $i);
         }
 
         $this->parser->parse($yaml);
@@ -3242,10 +3242,10 @@ class ParserTest extends TestCase
         $this->expectExceptionMessage('Maximum number of collection aliases');
 
         $yaml = <<<YAML
-a0: &a0 [foo]
-a1: &a1 [*a0, *a0, *a0]
-payload: [*a1, *a1, *a1]
-YAML;
+            a0: &a0 [foo]
+            a1: &a1 [*a0, *a0, *a0]
+            payload: [*a1, *a1, *a1]
+            YAML;
 
         $parser->parse($yaml);
     }
@@ -3258,11 +3258,11 @@ YAML;
         $this->expectExceptionMessage('Maximum number of collection aliases');
 
         $yaml = <<<YAML
-a: &a !my_tag [foo, bar]
-b: *a
-c: *a
-d: *a
-YAML;
+            a: &a !my_tag [foo, bar]
+            b: *a
+            c: *a
+            d: *a
+            YAML;
 
         $parser->parse($yaml, Yaml::PARSE_CUSTOM_TAGS);
     }
@@ -3272,12 +3272,12 @@ YAML;
         $parser = new Parser(Parser::DEFAULT_MAX_NESTING_LEVEL, 1);
 
         $yaml = <<<YAML
-anchor: &val scalar_value
-a: *val
-b: *val
-c: *val
-d: *val
-YAML;
+            anchor: &val scalar_value
+            a: *val
+            b: *val
+            c: *val
+            d: *val
+            YAML;
 
         $result = $parser->parse($yaml);
 
@@ -3287,11 +3287,11 @@ YAML;
 
     public function testParseAcceptsLargeCollectionAliasedOnce()
     {
-        $items = implode(', ', array_map(function ($i) { return "item$i"; }, range(1, 500)));
+        $items = implode(', ', array_map(static fn ($i) => "item$i", range(1, 500)));
         $yaml = <<<YAML
-defaults: &defaults [$items]
-a: *defaults
-YAML;
+            defaults: &defaults [$items]
+            a: *defaults
+            YAML;
 
         $result = $this->parser->parse($yaml);
 
@@ -3304,9 +3304,9 @@ YAML;
         $this->expectExceptionMessage('Aliases are disabled');
 
         $yaml = <<<YAML
-defaults: &defaults [foo, bar]
-a: *defaults
-YAML;
+            defaults: &defaults [foo, bar]
+            a: *defaults
+            YAML;
 
         $this->parser->parse($yaml, Yaml::PARSE_EXCEPTION_ON_ALIAS);
     }
@@ -3317,16 +3317,16 @@ YAML;
         $this->expectExceptionMessage('Aliases are disabled');
 
         $yaml = <<<YAML
-defaults: &defaults [foo, bar]
-a: [*defaults]
-YAML;
+            defaults: &defaults [foo, bar]
+            a: [*defaults]
+            YAML;
 
         $this->parser->parse($yaml, Yaml::PARSE_EXCEPTION_ON_ALIAS);
     }
 
     public function testParseHandlesLargeYamlHeaders()
     {
-        $yaml = "%YAML:".str_repeat('1', 100000)."\nfoo: bar\n";
+        $yaml = '%YAML:'.str_repeat('1', 100000)."\nfoo: bar\n";
 
         $this->assertSame(['foo' => 'bar'], $this->parser->parse($yaml));
     }
