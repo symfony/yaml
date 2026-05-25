@@ -55,10 +55,10 @@ class YamlTest extends TestCase
         $file = tempnam(sys_get_temp_dir(), 'yaml_');
 
         file_put_contents($file, <<<YAML
-defaults: &defaults [foo, bar]
-copy: *defaults
-YAML
-);
+            defaults: &defaults [foo, bar]
+            copy: *defaults
+            YAML
+        );
 
         $this->expectException(ParseException::class);
         $this->expectExceptionMessage('Maximum number of collection aliases (0) exceeded.');
