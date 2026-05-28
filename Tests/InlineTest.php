@@ -1138,9 +1138,7 @@ class InlineTest extends TestCase
         $this->assertSame($parsed['block'], $parsed['flow']);
     }
 
-    /**
-     * @dataProvider getAnchoredInlineValues
-     */
+    #[DataProvider('getAnchoredInlineValues')]
     public function testParseAnchoredInlineValues(string $yaml, array $expected)
     {
         $this->assertSame($expected, Inline::parse($yaml));
