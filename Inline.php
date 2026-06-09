@@ -710,7 +710,7 @@ class Inline
                                 throw new ParseException(\sprintf('The "!php/object" tag only supports a string value, got "%s".', get_debug_type($serialized)), self::$parsedLineNumber + 1, $scalar, self::$parsedFilename);
                             }
 
-                            return unserialize((string) $serialized);
+                            return unserialize((string) $serialized, ['allowed_classes' => true]);
                         }
 
                         if (self::$exceptionOnInvalidType) {
