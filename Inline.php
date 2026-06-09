@@ -700,7 +700,7 @@ class Inline
                                 throw new ParseException('Missing value for tag "!php/object".', self::$parsedLineNumber + 1, $scalar, self::$parsedFilename);
                             }
 
-                            return unserialize(self::parseScalar(substr($scalar, 12)));
+                            return unserialize(self::parseScalar(substr($scalar, 12)), ['allowed_classes' => true]);
                         }
 
                         if (self::$exceptionOnInvalidType) {
