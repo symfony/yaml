@@ -190,6 +190,11 @@ class ParserTest extends TestCase
         ];
     }
 
+    public function testNonBreakingSpaceIsNotAWhitespaceSeparator()
+    {
+        $this->assertSame("-\u{A0}foo", $this->parser->parse("-\u{A0}foo"));
+    }
+
     public function testParserIsStateless()
     {
         $yamlString = '# translations/messages.en.yaml
