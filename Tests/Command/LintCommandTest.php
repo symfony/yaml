@@ -88,7 +88,7 @@ bar';
     public function testLintFilesWithMarkupInTheirName()
     {
         $cwd = getcwd();
-        chdir(sys_get_temp_dir().'/framework-yml-lint-test');
+        chdir(sys_get_temp_dir().'/sf_yaml_'.hash('xxh32', __FILE__));
 
         try {
             $this->files[] = $valid = getcwd().'/a<comment>.yaml';
@@ -121,7 +121,7 @@ bar';
 
     public function testLintFileWithInvalidUtf8NameWithJsonFormat()
     {
-        $this->files[] = $filename = sys_get_temp_dir()."/framework-yml-lint-test/\xFF.yaml";
+        $this->files[] = $filename = sys_get_temp_dir().'/sf_yaml_'.hash('xxh32', __FILE__)."/\xFF.yaml";
 
         if (!@file_put_contents($filename, 'foo: bar')) {
             $this->markTestSkipped('The filesystem does not support non-UTF-8 file names.');
@@ -132,7 +132,7 @@ bar';
         $json = json_decode($tester->getDisplay(), true, 512, \JSON_THROW_ON_ERROR);
 
         $this->assertSame(0, $ret);
-        $this->assertSame(sys_get_temp_dir()."/framework-yml-lint-test/\u{FFFD}.yaml", $json[0]['file']);
+        $this->assertSame(sys_get_temp_dir().'/sf_yaml_'.hash('xxh32', __FILE__)."/\u{FFFD}.yaml", $json[0]['file']);
     }
 
     public function testLintIncorrectFileWithGithubFormat()
@@ -575,7 +575,7 @@ bar';
     {
         $this->skipIfJsonSchemaMissing();
 
-        $this->createSchemaFile(sys_get_temp_dir().'/framework-yml-lint-test/schema.json');
+        $this->createSchemaFile(sys_get_temp_dir().'/sf_yaml_'.hash('xxh32', __FILE__).'/schema.json');
         $filename = $this->createPackageFile("# yaml-language-server: \$schema=../schema.json\nversion: not-an-integer");
 
         $ret = $this->createCommandTester()->execute(['filename' => $filename], ['decorated' => false]);
@@ -711,7 +711,7 @@ bar';
     {
         $this->skipIfJsonSchemaMissing();
 
-        $dir = sys_get_temp_dir().'/framework-yml-lint-test/with space';
+        $dir = sys_get_temp_dir().'/sf_yaml_'.hash('xxh32', __FILE__).'/with space';
         @mkdir($dir);
         $schema = $this->createSchemaFile($dir.'/schema.json');
         $filename = $this->createFile(\sprintf("# \$schema: file:///%s\nversion: not-an-integer", str_replace(' ', '%20', ltrim(strtr($schema, '\\', '/'), '/'))));
@@ -759,7 +759,7 @@ bar';
             $this->markTestSkipped('A colon is not allowed in a file name on Windows.');
         }
 
-        $dir = sys_get_temp_dir().'/framework-yml-lint-test/foo:';
+        $dir = sys_get_temp_dir().'/sf_yaml_'.hash('xxh32', __FILE__).'/foo:';
         @mkdir($dir);
         $schema = $this->createSchemaFile($dir.'/schema.json');
         $filename = $this->createFile('version: not-an-integer');
@@ -878,7 +878,7 @@ bar';
 
     private function createFile($content): string
     {
-        $filename = tempnam(sys_get_temp_dir().'/framework-yml-lint-test', 'sf-');
+        $filename = tempnam(sys_get_temp_dir().'/sf_yaml_'.hash('xxh32', __FILE__), 'sf-');
         file_put_contents($filename, $content);
 
         $this->files[] = $filename;
@@ -888,8 +888,8 @@ bar';
 
     private function createPackageFile(string $content): string
     {
-        @mkdir(sys_get_temp_dir().'/framework-yml-lint-test/packages');
-        $filename = tempnam(sys_get_temp_dir().'/framework-yml-lint-test/packages', 'sf-');
+        @mkdir(sys_get_temp_dir().'/sf_yaml_'.hash('xxh32', __FILE__).'/packages');
+        $filename = tempnam(sys_get_temp_dir().'/sf_yaml_'.hash('xxh32', __FILE__).'/packages', 'sf-');
         file_put_contents($filename, $content);
 
         $this->files[] = $filename;
@@ -948,7 +948,7 @@ bar';
     protected function setUp(): void
     {
         $this->files = [];
-        @mkdir(sys_get_temp_dir().'/framework-yml-lint-test');
+        @mkdir(sys_get_temp_dir().'/sf_yaml_'.hash('xxh32', __FILE__));
     }
 
     protected function tearDown(): void
@@ -959,8 +959,8 @@ bar';
             }
         }
 
-        @rmdir(sys_get_temp_dir().'/framework-yml-lint-test/packages');
-        @rmdir(sys_get_temp_dir().'/framework-yml-lint-test');
+        @rmdir(sys_get_temp_dir().'/sf_yaml_'.hash('xxh32', __FILE__).'/packages');
+        @rmdir(sys_get_temp_dir().'/sf_yaml_'.hash('xxh32', __FILE__));
     }
 }
 
