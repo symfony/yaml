@@ -80,7 +80,7 @@ bar';
     public function testLintFilesWithMarkupInTheirName()
     {
         $cwd = getcwd();
-        chdir(sys_get_temp_dir().'/framework-yml-lint-test');
+        chdir(sys_get_temp_dir().'/sf_yaml_'.hash('xxh32', __FILE__));
 
         try {
             $this->files[] = $valid = getcwd().'/a<comment>.yaml';
@@ -113,7 +113,7 @@ bar';
 
     public function testLintFileWithInvalidUtf8NameWithJsonFormat()
     {
-        $this->files[] = $filename = sys_get_temp_dir()."/framework-yml-lint-test/\xFF.yaml";
+        $this->files[] = $filename = sys_get_temp_dir().'/sf_yaml_'.hash('xxh32', __FILE__)."/\xFF.yaml";
 
         if (!@file_put_contents($filename, 'foo: bar')) {
             $this->markTestSkipped('The filesystem does not support non-UTF-8 file names.');
@@ -124,7 +124,7 @@ bar';
         $json = json_decode($tester->getDisplay(), true, 512, \JSON_THROW_ON_ERROR);
 
         $this->assertSame(0, $ret);
-        $this->assertSame(sys_get_temp_dir()."/framework-yml-lint-test/\u{FFFD}.yaml", $json[0]['file']);
+        $this->assertSame(sys_get_temp_dir().'/sf_yaml_'.hash('xxh32', __FILE__)."/\u{FFFD}.yaml", $json[0]['file']);
     }
 
     public function testLintIncorrectFileWithGithubFormat()
@@ -229,7 +229,7 @@ bar';
 
     private function createFile($content): string
     {
-        $filename = tempnam(sys_get_temp_dir().'/framework-yml-lint-test', 'sf-');
+        $filename = tempnam(sys_get_temp_dir().'/sf_yaml_'.hash('xxh32', __FILE__), 'sf-');
         file_put_contents($filename, $content);
 
         $this->files[] = $filename;
@@ -253,7 +253,7 @@ bar';
     protected function setUp(): void
     {
         $this->files = [];
-        @mkdir(sys_get_temp_dir().'/framework-yml-lint-test');
+        @mkdir(sys_get_temp_dir().'/sf_yaml_'.hash('xxh32', __FILE__));
     }
 
     protected function tearDown(): void
@@ -264,7 +264,7 @@ bar';
             }
         }
 
-        @rmdir(sys_get_temp_dir().'/framework-yml-lint-test');
+        @rmdir(sys_get_temp_dir().'/sf_yaml_'.hash('xxh32', __FILE__));
     }
 }
 
