@@ -33,8 +33,6 @@ class ParserTest extends TestCase
     protected function tearDown(): void
     {
         $this->parser = null;
-
-        chmod(__DIR__.'/Fixtures/not_readable.yml', 0o644);
     }
 
     public function testTopLevelNumber()
@@ -3190,13 +3188,18 @@ class ParserTest extends TestCase
             $this->markTestSkipped('This test will fail if run under superuser');
         }
 
-        $file = __DIR__.'/Fixtures/not_readable.yml';
+        $file = sys_get_temp_dir().'/sf_yaml_'.hash('xxh32', __FILE__).'.yml';
+        touch($file);
         chmod($file, 0o200);
 
         $this->expectException(ParseException::class);
-        $this->expectExceptionMessageMatches('#^File ".+/Fixtures/not_readable.yml" cannot be read\.$#');
+        $this->expectExceptionMessage(\sprintf('File "%s" cannot be read.', $file));
 
-        $this->parser->parseFile($file);
+        try {
+            $this->parser->parseFile($file);
+        } finally {
+            unlink($file);
+        }
     }
 
     public function testParseReferencesOnMergeKeys()
